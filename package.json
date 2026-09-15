@@ -4,6 +4,10 @@
   "description": "API backend da Urbizzi em TypeScript",
   "main": "dist/server.js",
   "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/server.js",
@@ -34,21 +38,26 @@
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
+    "drizzle-orm": "^1.0.0-rc.4",
     "express": "^5.2.1",
-    "helmet": "^8.3.0"
+    "helmet": "^8.3.0",
+    "pg": "^8.23.0",
+    "postgres": "^3.4.9"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^26.2.0",
+    "@types/pg": "^8.23.1",
     "@types/supertest": "^7.2.1",
     "@typescript-eslint/eslint-plugin": "^8.67.0",
     "@typescript-eslint/parser": "^8.67.0",
+    "drizzle-kit": "^1.0.0-rc.4",
     "eslint": "^10.8.1",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.6",
     "supertest": "^7.2.2",
-    "tsx": "^4.23.12",
+    "tsx": "^4.23.13",
     "typescript": "^5.9.2",
     "vitest": "^4.1.10"
   }
