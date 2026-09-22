@@ -1,7 +1,7 @@
-import type { Cidade } from "../modules/cidade/entities/cidade.entity";
-import { HttpError } from "../errors/http-error";
-import type { CidadeRepository } from "../modules/cidade/repositories/cidade.repository";
-import { validateCidadeInput } from "../modules/cidade/schemas/cidade.schema";
+import { HttpError } from "../../../shared/errors/http-error";
+import type { Cidade } from "../entities/cidade.entity";
+import type { CidadeRepository } from "../repositories/cidade.repository";
+import { validateCidadeInput } from "../schemas/cidade.schema";
 
 export class CidadeService {
   constructor(private readonly cidadeRepository: CidadeRepository) {}

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { HttpError } from "../src/shared/errors/http-error";
 import { InMemoryCidadeRepository } from "../src/modules/cidade/repositories/in-memory-cidade.repository";
-import { CidadeService } from "../src/services/cidade.service";
+import { CidadeService } from "../src/modules/cidade/services/cidade.service";
 
 describe("CidadeService", () => {
   let repository: InMemoryCidadeRepository;

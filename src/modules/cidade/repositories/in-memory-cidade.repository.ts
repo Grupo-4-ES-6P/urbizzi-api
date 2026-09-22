@@ -1,11 +1,11 @@
 import { Cidade } from "../entities/cidade.entity";
-import type { CidadeRepository } from "./cidade.repository";
+import type { CidadeRepository, CidadeRepositoryData } from "./cidade.repository";
 
 export class InMemoryCidadeRepository implements CidadeRepository {
   private cidades = new Map<number, Cidade>();
   private nextId = 1;
 
-  async create(data: Omit<Cidade, "idCidade">): Promise<Cidade> {
+  async create(data: CidadeRepositoryData): Promise<Cidade> {
     const cidade = new Cidade(this.nextId, data.nome);
 
     this.cidades.set(cidade.idCidade, cidade);
@@ -22,7 +22,7 @@ export class InMemoryCidadeRepository implements CidadeRepository {
     return Array.from(this.cidades.values());
   }
 
-  async update(idCidade: number, data: Omit<Cidade, "idCidade">): Promise<Cidade | null> {
+  async update(idCidade: number, data: CidadeRepositoryData): Promise<Cidade | null> {
     if (!this.cidades.has(idCidade)) {
       return null;
     }

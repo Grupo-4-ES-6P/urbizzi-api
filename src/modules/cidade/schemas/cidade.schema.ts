@@ -1,9 +1,32 @@
-import { pgTable, varchar, bigint } from "drizzle-orm/pg-core";
+export interface CidadeInput {
+  nome: string;
+}
 
-export const cidadeSchema = pgTable("cidade", {
-    id: bigint("id_cidade", { mode: "bigint" })
-        .primaryKey()
-        .generatedByDefaultAsIdentity()
-        .notNull(),
-    nome: varchar("nome", { length: 256 }).notNull(),
-});
+export interface CidadeValidationResult {
+  data?: CidadeInput;
+  error?: string;
+}
+
+export function validateCidadeInput(input: unknown): CidadeValidationResult {
+  if (!input || typeof input !== "object") {
+    return { error: "Cidade é obrigatória." };
+  }
+
+  const nome = (input as Partial<Record<keyof CidadeInput, unknown>>).nome;
+
+  if (typeof nome !== "string") {
+    return { error: "Nome da cidade é obrigatório." };
+  }
+
+  const trimmedNome = nome.trim();
+
+  if (trimmedNome.length === 0) {
+    return { error: "Nome da cidade não pode estar vázio." };
+  }
+
+  return {
+    data: {
+      nome: trimmedNome
+    }
+  };
+}

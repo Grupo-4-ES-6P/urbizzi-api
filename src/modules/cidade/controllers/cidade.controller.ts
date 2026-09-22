@@ -1,10 +1,11 @@
 import type { Request, Response } from "express";
 import { HttpError } from "../../../shared/errors/http-error";
+import { CidadeService } from "../services/cidade.service";
+import { DrizzleCidadeRepository } from "../repositories/drizzle-cidade.repository";
 import { InMemoryCidadeRepository } from "../repositories/in-memory-cidade.repository";
-import { CidadeService } from "../../../services/cidade.service";
 
-const cidadeRepository = new InMemoryCidadeRepository();
-const cidadeService = new CidadeService(cidadeRepository);
+let cidadeService = new CidadeService(new DrizzleCidadeRepository());
+let testRepository: InMemoryCidadeRepository | null = null;
 
 function parseId(value: string | string[]): number {
   if (Array.isArray(value)) {
@@ -74,5 +75,11 @@ export async function deleteCidade(req: Request, res: Response): Promise<void> {
 }
 
 export function resetCidadeRepositoryForTests(): void {
-  cidadeRepository.clear();
+  if (!testRepository) {
+    testRepository = new InMemoryCidadeRepository();
+    cidadeService = new CidadeService(testRepository);
+    return;
+  }
+
+  testRepository.clear();
 }
