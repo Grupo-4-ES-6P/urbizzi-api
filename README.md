@@ -1,53 +1,57 @@
-# Urbizzi API
+# Urbizzi
 
-Base inicial para backend da Urbizzi usando Node.js + TypeScript + Express.
+Projeto base em NestJS.
 
-## Requisitos
+## Pré-requisitos
 
-- Node.js 20+
-- npm 10+
+- Node.js >= 20
+- npm >= 10
 
-## Setup
-
-1. Instale as dependencias:
+## Instalação
 
 ```bash
 npm install
 ```
 
-2. Crie o arquivo de ambiente:
+## Ambiente
+
+Crie um `.env` com:
+
+```env
+PORT=3000
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/urbizzi
+```
+
+## Rodar em desenvolvimento
 
 ```bash
-cp .env.example .env
+npm run start:dev
+```
+
+A rota de verificação inicial está disponível em:
+
+- `GET /health`
+
+## Estrutura
+
+```txt
+src/
+  app.controller.ts
+  app.module.ts
+  app.service.ts
+  main.ts
+  modules/
+  shared/
 ```
 
 ## Scripts
 
-- `npm run dev`: sobe a API em modo desenvolvimento com reload
-- `npm run build`: compila TypeScript para `dist`
-- `npm start`: executa build compilado
-- `npm run test`: roda testes com Vitest
-- `npm run lint`: valida com ESLint
-- `npm run format`: formata com Prettier
-- `npm run typecheck`: valida tipagem sem gerar build
-
-## Estrutura
-
-```text
-src/
-	app.ts
-	server.ts
-	config/
-		env.ts
-	controllers/
-		health.controller.ts
-	routes/
-		index.ts
-tests/
-	health.test.ts
-```
-
-## Endpoints iniciais
-
-- `GET /`
-- `GET /api/health`
+- `npm run start:dev`: inicia com hot reload
+- `npm run build`: gera `dist/`
+- `npm run start:prod`: executa build
+- `npm run db:generate`: gera migrations com Drizzle
+- `npm run db:migrate`: aplica migrations
+- `npm run db:push`: sincroniza schema direto no banco
+- `npm run db:studio`: abre Drizzle Studio
+- `npm run lint`: executa lint
+- `npm run check`: executa validações do Biome
