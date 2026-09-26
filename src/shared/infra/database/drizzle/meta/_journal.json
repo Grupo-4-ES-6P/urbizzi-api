@@ -8,6 +8,13 @@
       "when": 1790048017755,
       "tag": "0000_modern_skrulls",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790430969684,
+      "tag": "0001_legal_the_executioner",
+      "breakpoints": true
     }
   ]
 }
