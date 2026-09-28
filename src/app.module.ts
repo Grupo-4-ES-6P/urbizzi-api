@@ -5,6 +5,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AdministradorModule } from "./modules/administrador/administrador.module";
 import { AuthModule } from "./modules/auth/auth.module";
+import { CidadeModule } from "./modules/cidade/cidade.module";
 import { UsuariosModule } from "./modules/usuarios/usuarios.module";
 
 @Module({
@@ -15,6 +16,7 @@ import { UsuariosModule } from "./modules/usuarios/usuarios.module";
     SharedModule,
     AdministradorModule,
     AuthModule,
+    CidadeModule,
     UsuariosModule,
   ],
   controllers: [AppController],
