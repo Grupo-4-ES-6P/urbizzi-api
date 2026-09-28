@@ -1,4 +1,6 @@
 import { describe, expect, it, jest } from "@jest/globals";
+import { CreateClienteDto } from "@modules/clientes/application/dto/create-cliente.dto";
+import { UpdateClienteDto } from "@modules/clientes/application/dto/update-cliente.dto";
 import { ClienteService } from "@modules/clientes/application/services/cliente.service";
 import { ClienteAccessService } from "@modules/clientes/application/services/cliente-access.service";
 import {
@@ -48,5 +50,21 @@ describe("ClienteController", () => {
         ClienteController.prototype.deactivate,
       ),
     ).toEqual(["CLIENTE_DESATIVAR"]);
+  });
+
+  it("preserva os DTOs em runtime para o ValidationPipe", () => {
+    const createTypes = Reflect.getMetadata(
+      "design:paramtypes",
+      ClienteController.prototype,
+      "create",
+    );
+    const updateTypes = Reflect.getMetadata(
+      "design:paramtypes",
+      ClienteController.prototype,
+      "update",
+    );
+
+    expect(createTypes[0]).toBe(CreateClienteDto);
+    expect(updateTypes[1]).toBe(UpdateClienteDto);
   });
 });

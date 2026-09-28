@@ -16,9 +16,9 @@ import {
   ActivateClienteAccessDto,
   CreateClienteAccessDto,
 } from "../../application/dto/cliente-access.dto";
-import type { CreateClienteDto } from "../../application/dto/create-cliente.dto";
+import { CreateClienteDto } from "../../application/dto/create-cliente.dto";
 import { FindClientesQueryDto } from "../../application/dto/find-clientes-query.dto";
-import type { UpdateClienteDto } from "../../application/dto/update-cliente.dto";
+import { UpdateClienteDto } from "../../application/dto/update-cliente.dto";
 import {
   type ClientePaginacao,
   ClienteService,
