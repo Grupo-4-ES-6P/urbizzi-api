@@ -1,5 +1,5 @@
 {
-  "id": "08833bd9-a01d-4542-a54f-fc76f4c50e64",
+  "id": "5b6bf97e-d4cd-44dc-8aa2-0d85122eb154",
   "prevId": "21bdf480-a4ff-4d32-ada1-e945f3a20414",
   "version": "7",
   "dialect": "postgresql",
@@ -78,43 +78,19 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.loteamento": {
-      "name": "loteamento",
+    "public.cidade": {
+      "name": "cidade",
       "schema": "",
       "columns": {
-        "id_loteamento": {
-          "name": "id_loteamento",
-          "type": "serial",
+        "id_cidade": {
+          "name": "id_cidade",
+          "type": "bigserial",
           "primaryKey": true,
           "notNull": true
         },
         "nome": {
           "name": "nome",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "descricao": {
-          "name": "descricao",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "situacao": {
-          "name": "situacao",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "publicado": {
-          "name": "publicado",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "id_bairro": {
-          "name": "id_bairro",
-          "type": "integer",
+          "type": "varchar(256)",
           "primaryKey": false,
           "notNull": true
         }
