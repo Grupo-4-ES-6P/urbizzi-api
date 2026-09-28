@@ -15,6 +15,13 @@
       "when": 1790124063946,
       "tag": "0001_tricky_zarek",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790635790342,
+      "tag": "0002_white_fantastic_four",
+      "breakpoints": true
     }
   ]
 }
