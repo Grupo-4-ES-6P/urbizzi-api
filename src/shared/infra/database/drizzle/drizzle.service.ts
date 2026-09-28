@@ -2,6 +2,7 @@
 import { administradorSchema } from "@modules/administrador/infra/schemas/administrador.schema";
 import { usuariosSchema } from "@modules/usuarios/infra/schemas/usuario.schema";
 import { clienteSchema } from "@modules/clientes/infra/schemas/cliente.schema";
+import { clienteAccessTokenSchema } from "@modules/clientes/infra/schemas/cliente-access-token.schema";
 import { Injectable, type OnModuleDestroy } from "@nestjs/common";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
@@ -10,6 +11,7 @@ const schema = {
   administradorSchema,
   usuariosSchema,
   clienteSchema,
+  clienteAccessTokenSchema,
 };
 
 @Injectable()

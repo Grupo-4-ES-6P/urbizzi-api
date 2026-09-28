@@ -15,6 +15,13 @@
       "when": 1790562644222,
       "tag": "0001_spooky_owl",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790562943021,
+      "tag": "0002_dapper_sunset_bain",
+      "breakpoints": true
     }
   ]
 }

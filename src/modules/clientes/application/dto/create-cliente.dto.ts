@@ -1,5 +1,6 @@
 import { Transform } from "class-transformer";
 import {
+  IsBoolean,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -55,4 +56,13 @@ export class CreateClienteDto {
   @IsString()
   @MaxLength(256)
   origem?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  criarAcesso = false;
+
+  @IsOptional()
+  @IsEmail()
+  @MaxLength(256)
+  emailAcesso?: string;
 }

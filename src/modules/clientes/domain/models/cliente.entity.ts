@@ -22,6 +22,8 @@ export interface ClienteEntityProps {
   usuarioId?: bigint | null;
   dataCadastro?: Date;
   dataAtualizacao?: Date;
+  emailAcesso?: string | null;
+  statusAcesso?: string | null;
 }
 
 export class ClienteEntity {
@@ -38,6 +40,8 @@ export class ClienteEntity {
   readonly usuarioId: bigint | null;
   readonly dataCadastro: Date;
   readonly dataAtualizacao: Date;
+  readonly emailAcesso: string | null;
+  readonly statusAcesso: string | null;
 
   constructor(props: ClienteEntityProps) {
     this.id = props.id;
@@ -53,6 +57,8 @@ export class ClienteEntity {
     this.usuarioId = props.usuarioId ?? null;
     this.dataCadastro = props.dataCadastro ?? new Date();
     this.dataAtualizacao = props.dataAtualizacao ?? new Date();
+    this.emailAcesso = props.emailAcesso ?? null;
+    this.statusAcesso = props.statusAcesso ?? null;
   }
 
   get nomeExibicao(): string {

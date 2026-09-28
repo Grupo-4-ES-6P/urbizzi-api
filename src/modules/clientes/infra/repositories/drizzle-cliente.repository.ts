@@ -1,3 +1,4 @@
+import { usuariosSchema } from "@modules/usuarios/infra/schemas/usuario.schema";
 import { Injectable } from "@nestjs/common";
 import { DrizzleService } from "@shared/infra/database/drizzle/drizzle.service";
 import { and, count, eq, ilike, type SQL } from "drizzle-orm";
@@ -10,9 +11,11 @@ import type {
   BuscarClientesPaginadoInput,
   BuscarClientesPaginadoResultado,
   ClienteRepository,
+  NovoAcessoPendenteInput,
   NovoClienteInput,
 } from "../../domain/repositories/cliente.repository";
 import { clienteSchema } from "../schemas/cliente.schema";
+import { clienteAccessTokenSchema } from "../schemas/cliente-access-token.schema";
 
 @Injectable()
 export class DrizzleClienteRepository implements ClienteRepository {
@@ -27,14 +30,48 @@ export class DrizzleClienteRepository implements ClienteRepository {
     return this.toEntity(row);
   }
 
+  async saveWithPendingAccess(
+    input: NovoClienteInput,
+    acesso: NovoAcessoPendenteInput,
+  ): Promise<ClienteEntity> {
+    return this.drizzleService.db.transaction(async (tx) => {
+      const [usuario] = await tx
+        .insert(usuariosSchema)
+        .values({
+          email: acesso.email,
+          password: acesso.passwordHash,
+          permissions: ["CLIENTE_ACESSAR"],
+          status: "PENDENTE_ATIVACAO",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning();
+      const [row] = await tx
+        .insert(clienteSchema)
+        .values({ ...input, usuarioId: usuario.id })
+        .returning();
+      await tx.insert(clienteAccessTokenSchema).values({
+        usuarioId: usuario.id,
+        tokenHash: acesso.tokenHash,
+        expiresAt: acesso.expiresAt,
+      });
+      return this.toEntity({
+        ...row,
+        emailAcesso: usuario.email,
+        statusAcesso: usuario.status,
+      });
+    });
+  }
+
   async findById(id: bigint): Promise<ClienteEntity | null> {
     const [row] = await this.drizzleService.db
-      .select()
+      .select({ cliente: clienteSchema, usuario: usuariosSchema })
       .from(clienteSchema)
+      .leftJoin(usuariosSchema, eq(clienteSchema.usuarioId, usuariosSchema.id))
       .where(eq(clienteSchema.id, id))
       .limit(1);
 
-    return row ? this.toEntity(row) : null;
+    return row ? this.toEntity(this.flatten(row)) : null;
   }
 
   async findByDocumento(documento: string): Promise<ClienteEntity | null> {
@@ -55,8 +92,12 @@ export class DrizzleClienteRepository implements ClienteRepository {
 
     const [rows, [total]] = await Promise.all([
       this.drizzleService.db
-        .select()
+        .select({ cliente: clienteSchema, usuario: usuariosSchema })
         .from(clienteSchema)
+        .leftJoin(
+          usuariosSchema,
+          eq(clienteSchema.usuarioId, usuariosSchema.id),
+        )
         .where(where)
         .limit(input.perPage)
         .offset(offset),
@@ -67,7 +108,7 @@ export class DrizzleClienteRepository implements ClienteRepository {
     ]);
 
     return {
-      data: rows.map((row) => this.toEntity(row)),
+      data: rows.map((row) => this.toEntity(this.flatten(row))),
       totalItems: total?.value ?? 0,
     };
   }
@@ -82,7 +123,7 @@ export class DrizzleClienteRepository implements ClienteRepository {
       .where(eq(clienteSchema.id, id))
       .returning();
 
-    return row ? this.toEntity(row) : null;
+    return row ? this.findById(id) : null;
   }
 
   private buildWhere(input: BuscarClientesPaginadoInput): SQL | undefined {
@@ -114,7 +155,26 @@ export class DrizzleClienteRepository implements ClienteRepository {
     return clauses.length > 0 ? and(...clauses) : undefined;
   }
 
-  private toEntity(row: typeof clienteSchema.$inferSelect): ClienteEntity {
+  private toEntity(
+    row: typeof clienteSchema.$inferSelect & {
+      emailAcesso?: string | null;
+      statusAcesso?: string | null;
+    },
+  ): ClienteEntity {
     return new ClienteEntity(row as ClienteEntityProps);
+  }
+
+  private flatten(row: {
+    cliente: typeof clienteSchema.$inferSelect;
+    usuario: typeof usuariosSchema.$inferSelect | null;
+  }): typeof clienteSchema.$inferSelect & {
+    emailAcesso: string | null;
+    statusAcesso: string | null;
+  } {
+    return {
+      ...row.cliente,
+      emailAcesso: row.usuario?.email ?? null,
+      statusAcesso: row.usuario?.status ?? null,
+    };
   }
 }

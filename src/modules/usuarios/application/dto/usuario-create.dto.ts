@@ -1,13 +1,13 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  IsArray,
-  MaxLength,
-  IsInt,
-  IsOptional,
-} from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import {
+  IsArray,
+  IsEmail,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from "class-validator";
 
 export class CreateUsuarioDto {
   @ApiProperty()
@@ -23,14 +23,14 @@ export class CreateUsuarioDto {
   @MaxLength(256)
   password!: string;
 
-  @ApiProperty({required: false})
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsInt({
     message: "jogadorId deve ser um inteiro positivo.",
   })
   jogadorId?: bigint | undefined;
-    
-  @ApiProperty({required: false})
+
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsInt({
     message: "administradorId deve ser um inteiro positivo.",

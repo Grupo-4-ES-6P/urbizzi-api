@@ -13,6 +13,7 @@ export interface AuthUsuarioResponse {
   email: string;
   idJogador: string | null;
   idAdministrador: string | null;
+  idCliente: string | null;
   permissoes: string[];
 }
 
@@ -40,6 +41,12 @@ export class AuthService {
       throw new UnauthorizedException("Email ou senha inválidos.");
     }
 
+    if (usuario.status !== "ATIVO") {
+      throw new UnauthorizedException(
+        "Usuário inativo ou aguardando ativação.",
+      );
+    }
+
     const senhaValida = await compare(data.senha, usuario.senhaHash);
 
     if (!senhaValida) {
@@ -55,6 +62,7 @@ export class AuthService {
       idAdministrador: usuario.idAdministrador
         ? usuario.idAdministrador.toString()
         : null,
+      idCliente: usuario.idCliente ? usuario.idCliente.toString() : null,
       permissoes,
     };
 
@@ -70,6 +78,7 @@ export class AuthService {
         email: payload.email,
         idJogador: payload.idJogador,
         idAdministrador: payload.idAdministrador,
+        idCliente: payload.idCliente,
         permissoes,
       },
     };

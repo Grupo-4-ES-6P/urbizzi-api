@@ -18,6 +18,7 @@ import {
 import type { CreateClienteDto } from "../dto/create-cliente.dto";
 import type { FindClientesQueryDto } from "../dto/find-clientes-query.dto";
 import type { UpdateClienteDto } from "../dto/update-cliente.dto";
+import { ClienteAccessService } from "./cliente-access.service";
 
 export interface ClientePaginacao {
   page: number;
@@ -31,14 +32,20 @@ export interface ClientesPaginados {
   paginacao: ClientePaginacao;
 }
 
+export interface ClienteCreateResult {
+  cliente: ClienteEntity;
+  conviteEnviado: boolean | null;
+}
+
 @Injectable()
 export class ClienteService {
   constructor(
     @Inject(CLIENTE_REPOSITORY)
     private readonly clienteRepository: ClienteRepository,
+    private readonly clienteAccessService: ClienteAccessService,
   ) {}
 
-  async create(dto: CreateClienteDto): Promise<ClienteEntity> {
+  async create(dto: CreateClienteDto): Promise<ClienteCreateResult> {
     const documento = this.normalizeDigits(dto.documentoIdentificacao);
     this.validateDocumento(dto.tipoDocumento, documento);
     this.validateIdentity(dto.tipoDocumento, dto.nome, dto.razaoSocial);
@@ -47,7 +54,7 @@ export class ClienteService {
       throw new ConflictException("Já existe cliente com este CPF ou CNPJ.");
     }
 
-    return this.clienteRepository.save({
+    const input = {
       tipoDocumento: dto.tipoDocumento,
       documentoIdentificacao: documento,
       nome: this.optionalTrim(dto.nome),
@@ -57,7 +64,32 @@ export class ClienteService {
       email: this.normalizeEmail(dto.email),
       origem: this.optionalTrim(dto.origem),
       status: StatusCliente.ATIVO,
-    });
+    };
+
+    if (!dto.criarAcesso) {
+      return {
+        cliente: await this.clienteRepository.save(input),
+        conviteEnviado: null,
+      };
+    }
+
+    const emailAcesso = dto.emailAcesso ?? dto.email;
+    if (!emailAcesso) {
+      throw new BadRequestException(
+        "emailAcesso ou email de contato é obrigatório para criar acesso.",
+      );
+    }
+    const pending =
+      await this.clienteAccessService.preparePendingAccess(emailAcesso);
+    const cliente = await this.clienteRepository.saveWithPendingAccess(
+      input,
+      pending,
+    );
+    const conviteEnviado = await this.clienteAccessService.sendInvitation(
+      pending.email,
+      pending.rawToken,
+    );
+    return { cliente, conviteEnviado };
   }
 
   async findById(id: string): Promise<ClienteEntity> {
@@ -154,7 +186,9 @@ export class ClienteService {
   }
 
   async deactivate(id: string): Promise<ClienteEntity> {
-    return this.changeStatus(id, StatusCliente.INATIVO);
+    const parsedId = this.parseId(id);
+    await this.clienteAccessService.deactivateClient(parsedId);
+    return this.findById(id);
   }
 
   async reactivate(id: string): Promise<ClienteEntity> {
