@@ -129,6 +129,7 @@ describe("AuthService", () => {
       email: "Admin@Quadras.com",
       idJogador: "22",
       idAdministrador: "33",
+      idCliente: null,
       permissoes: ["ADMIN", "FINANCEIRO"],
     });
     expect(result).toEqual({
@@ -140,6 +141,7 @@ describe("AuthService", () => {
         email: "Admin@Quadras.com",
         idJogador: "22",
         idAdministrador: "33",
+        idCliente: null,
         permissoes: ["ADMIN", "FINANCEIRO"],
       },
     });
@@ -167,5 +169,22 @@ describe("AuthService", () => {
 
     expect(result.expiresIn).toBe("1h");
     expect(result.usuario.permissoes).toEqual([]);
+  });
+
+  it("deve rejeitar login de usuário inativo", async () => {
+    const repository = makeRepository();
+    const service = new AuthService(
+      repository,
+      makeJwtService() as unknown as JwtService,
+      makeConfigService() as unknown as ConfigService,
+    );
+    repository.findByEmail.mockResolvedValue(
+      makeUsuario({ status: "INATIVO" }),
+    );
+
+    await expect(
+      service.login({ email: "cliente@example.com", senha: "qualquer" }),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+    expect(compareMock).not.toHaveBeenCalled();
   });
 });
