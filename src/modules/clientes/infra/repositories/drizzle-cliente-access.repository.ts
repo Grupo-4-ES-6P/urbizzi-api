@@ -141,13 +141,25 @@ export class DrizzleClienteAccessRepository implements ClienteAccessRepository {
     status: StatusAcessoCliente,
   ): Promise<void> {
     const [cliente] = await this.drizzleService.db
-      .select({ usuarioId: clienteSchema.usuarioId })
+      .select({
+        usuarioId: clienteSchema.usuarioId,
+        statusUsuario: usuariosSchema.status,
+      })
       .from(clienteSchema)
+      .leftJoin(usuariosSchema, eq(clienteSchema.usuarioId, usuariosSchema.id))
       .where(eq(clienteSchema.id, clienteId))
       .limit(1);
     if (!cliente) throw new NotFoundException("Cliente não encontrado.");
     if (!cliente.usuarioId) {
       throw new NotFoundException("Cliente não possui acesso associado.");
+    }
+    const expectedCurrentStatus = status === "ATIVO" ? "INATIVO" : "ATIVO";
+    if (cliente.statusUsuario !== expectedCurrentStatus) {
+      throw new ConflictException(
+        status === "ATIVO"
+          ? "Somente um acesso bloqueado pode ser reativado."
+          : "Somente um acesso ativo pode ser bloqueado.",
+      );
     }
     await this.drizzleService.db
       .update(usuariosSchema)
@@ -172,7 +184,12 @@ export class DrizzleClienteAccessRepository implements ClienteAccessRepository {
         await tx
           .update(usuariosSchema)
           .set({ status: "INATIVO", updatedAt: new Date() })
-          .where(eq(usuariosSchema.id, cliente.usuarioId));
+          .where(
+            and(
+              eq(usuariosSchema.id, cliente.usuarioId),
+              eq(usuariosSchema.status, "ATIVO"),
+            ),
+          );
       }
     });
   }

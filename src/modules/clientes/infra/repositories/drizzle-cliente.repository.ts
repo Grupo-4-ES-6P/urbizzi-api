@@ -1,7 +1,7 @@
 import { usuariosSchema } from "@modules/usuarios/infra/schemas/usuario.schema";
 import { Injectable } from "@nestjs/common";
 import { DrizzleService } from "@shared/infra/database/drizzle/drizzle.service";
-import { and, count, eq, ilike, type SQL } from "drizzle-orm";
+import { and, count, eq, ilike, or, type SQL } from "drizzle-orm";
 import {
   ClienteEntity,
   type ClienteEntityProps,
@@ -131,7 +131,12 @@ export class DrizzleClienteRepository implements ClienteRepository {
     const clauses: SQL[] = [];
 
     if (filtros.nome) {
-      clauses.push(ilike(clienteSchema.nome, `%${filtros.nome}%`));
+      const nomeClause = or(
+        ilike(clienteSchema.nome, `%${filtros.nome}%`),
+        ilike(clienteSchema.razaoSocial, `%${filtros.nome}%`),
+        ilike(clienteSchema.nomeFantasia, `%${filtros.nome}%`),
+      );
+      if (nomeClause) clauses.push(nomeClause);
     }
     if (filtros.documentoIdentificacao) {
       clauses.push(
