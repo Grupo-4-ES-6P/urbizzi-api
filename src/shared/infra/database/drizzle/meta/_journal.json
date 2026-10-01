@@ -8,6 +8,13 @@
       "when": 1790048017755,
       "tag": "0000_modern_skrulls",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790821673575,
+      "tag": "0001_add_logradouro_module",
+      "breakpoints": true
     }
   ]
 }
