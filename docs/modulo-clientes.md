@@ -96,10 +96,13 @@ A criação retorna `{ "cliente": { ... } }`. Não retorna `conviteEnviado`, `us
 
 ## Migrações
 
-- `0001_spooky_owl.sql` e `0002_dapper_sunset_bain.sql`: histórico original, mantido intacto.
-- `0003_desvincula_cliente_usuario.sql`: remove a FK, índice e coluna `cliente.id_usuario` e a tabela `cliente_access_token`.
+- `0000_modern_skrulls.sql`, `0001_tricky_zarek.sql` e `0002_white_fantastic_four.sql`: histórico da `dev`, preservado.
+- `0003_spooky_owl.sql` e `0004_dapper_sunset_bain.sql`: criação de cliente e acesso, com SQL preservado e numeração ajustada após a `dev`.
+- `0005_desvincula_cliente_usuario.sql`: remove a FK, índice e coluna `cliente.id_usuario` e a tabela `cliente_access_token`.
 
-Aplicar com `npm run db:migrate` antes de iniciar a versão atual. Funciona em banco novo (histórico completo) ou com as duas migrations anteriores já aplicadas.
+Aplicar com `npm run db:migrate` antes de iniciar a versão atual. Funciona em banco novo (histórico completo) ou em banco atualizado com as migrations da `dev`. Journal, timestamps e encadeamento dos snapshots foram alinhados a essa sequência.
+
+Se um banco já recebeu a numeração antiga exclusiva desta branch (`0001_spooky_owl`, `0002_dapper_sunset_bain`, `0003_desvincula_cliente_usuario`), não aplique automaticamente a sequência renumerada: o histórico do Drizzle precisa ser reconciliado com o estado real. Para banco local descartável, recrie-o; se houver dados importantes, faça backup e planeje a reconciliação antes de migrar. Essa renumeração prepara o PR para integração com a `dev`.
 
 Clientes e usuários existentes são preservados, inclusive credenciais, permissões e status de usuário. A migration descarta as associações antigas e tokens de convite; faça backup antes de aplicá-la em banco com dados. Restaurar os vínculos exige recuperar esse backup, além de reverter código/schema. Um simples revert de commit não restaura os dados removidos.
 

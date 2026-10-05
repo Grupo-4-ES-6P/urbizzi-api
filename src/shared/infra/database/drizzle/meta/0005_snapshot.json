@@ -1,6 +1,6 @@
 {
-  "id": "e5246620-03c0-425f-a820-e116cac328f3",
-  "prevId": "46b77838-88f2-4581-bc95-184e4beee8c3",
+  "id": "d62e1772-4597-4716-82d5-e8e0d7040488",
+  "prevId": "f15d7bac-eb30-4e39-9e2f-74e6e3a7a2c1",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -145,12 +145,6 @@
           "notNull": true,
           "default": "'ATIVO'"
         },
-        "id_usuario": {
-          "name": "id_usuario",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
         "data_cadastro": {
           "name": "data_cadastro",
           "type": "timestamp with time zone",
@@ -181,38 +175,9 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "cliente_usuario_unique": {
-          "name": "cliente_usuario_unique",
-          "columns": [
-            {
-              "expression": "id_usuario",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
-      "foreignKeys": {
-        "cliente_id_usuario_usuarios_id_fk": {
-          "name": "cliente_id_usuario_usuarios_id_fk",
-          "tableFrom": "cliente",
-          "tableTo": "usuarios",
-          "columnsFrom": [
-            "id_usuario"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "restrict",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -258,6 +223,14 @@
           "type": "text[]",
           "primaryKey": false,
           "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "status_usuario",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ATIVO'"
         },
         "created_at": {
           "name": "created_at",
@@ -385,6 +358,15 @@
       "values": [
         "CPF",
         "CNPJ"
+      ]
+    },
+    "public.status_usuario": {
+      "name": "status_usuario",
+      "schema": "public",
+      "values": [
+        "PENDENTE_ATIVACAO",
+        "ATIVO",
+        "INATIVO"
       ]
     }
   },

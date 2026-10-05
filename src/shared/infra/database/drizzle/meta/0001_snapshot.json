@@ -1,5 +1,5 @@
 {
-  "id": "e5246620-03c0-425f-a820-e116cac328f3",
+  "id": "5b6bf97e-d4cd-44dc-8aa2-0d85122eb154",
   "prevId": "21bdf480-a4ff-4d32-ada1-e945f3a20414",
   "version": "7",
   "dialect": "postgresql",
@@ -78,141 +78,25 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.cliente": {
-      "name": "cliente",
+    "public.cidade": {
+      "name": "cidade",
       "schema": "",
       "columns": {
-        "id_cliente": {
-          "name": "id_cliente",
+        "id_cidade": {
+          "name": "id_cidade",
           "type": "bigserial",
           "primaryKey": true,
-          "notNull": true
-        },
-        "tipo_documento": {
-          "name": "tipo_documento",
-          "type": "tipo_documento_cliente",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "documento_identificacao": {
-          "name": "documento_identificacao",
-          "type": "varchar(14)",
-          "primaryKey": false,
           "notNull": true
         },
         "nome": {
           "name": "nome",
           "type": "varchar(256)",
           "primaryKey": false,
-          "notNull": false
-        },
-        "razao_social": {
-          "name": "razao_social",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "nome_fantasia": {
-          "name": "nome_fantasia",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "telefone": {
-          "name": "telefone",
-          "type": "varchar(13)",
-          "primaryKey": false,
           "notNull": true
-        },
-        "email": {
-          "name": "email",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "origem": {
-          "name": "origem",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "status": {
-          "name": "status",
-          "type": "status_cliente",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'ATIVO'"
-        },
-        "id_usuario": {
-          "name": "id_usuario",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "data_cadastro": {
-          "name": "data_cadastro",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "data_atualizacao": {
-          "name": "data_atualizacao",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
         }
       },
-      "indexes": {
-        "cliente_documento_unique": {
-          "name": "cliente_documento_unique",
-          "columns": [
-            {
-              "expression": "documento_identificacao",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "cliente_usuario_unique": {
-          "name": "cliente_usuario_unique",
-          "columns": [
-            {
-              "expression": "id_usuario",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "cliente_id_usuario_usuarios_id_fk": {
-          "name": "cliente_id_usuario_usuarios_id_fk",
-          "tableFrom": "cliente",
-          "tableTo": "usuarios",
-          "columnsFrom": [
-            "id_usuario"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "restrict",
-          "onUpdate": "no action"
-        }
-      },
+      "indexes": {},
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -296,24 +180,7 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {
-    "public.status_cliente": {
-      "name": "status_cliente",
-      "schema": "public",
-      "values": [
-        "ATIVO",
-        "INATIVO"
-      ]
-    },
-    "public.tipo_documento_cliente": {
-      "name": "tipo_documento_cliente",
-      "schema": "public",
-      "values": [
-        "CPF",
-        "CNPJ"
-      ]
-    }
-  },
+  "enums": {},
   "schemas": {},
   "sequences": {},
   "roles": {},
