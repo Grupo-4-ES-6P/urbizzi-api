@@ -7,6 +7,7 @@ import { AdministradorModule } from "./modules/administrador/administrador.modul
 import { AuthModule } from "./modules/auth/auth.module";
 import { CidadeModule } from "./modules/cidade/cidade.module";
 import { LoteamentoModule } from "./modules/loteamento/loteamento.module";
+import { PropostaModule } from "./modules/proposta/proposta.module";
 import { UsuariosModule } from "./modules/usuarios/usuarios.module";
 
 @Module({
@@ -19,6 +20,7 @@ import { UsuariosModule } from "./modules/usuarios/usuarios.module";
     AuthModule,
     CidadeModule,
     LoteamentoModule,
+    PropostaModule,
     UsuariosModule,
   ],
   controllers: [AppController],
