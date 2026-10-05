@@ -1,6 +1,4 @@
-import { usuariosSchema } from "@modules/usuarios/infra/schemas/usuario.schema";
 import {
-  bigint,
   bigserial,
   pgEnum,
   pgTable,
@@ -31,10 +29,6 @@ export const clienteSchema = pgTable(
     email: varchar("email", { length: 256 }),
     origem: varchar("origem", { length: 256 }),
     status: statusClienteEnum("status").notNull().default("ATIVO"),
-    usuarioId: bigint("id_usuario", { mode: "bigint" }).references(
-      () => usuariosSchema.id,
-      { onDelete: "restrict" },
-    ),
     dataCadastro: timestamp("data_cadastro", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -44,6 +38,5 @@ export const clienteSchema = pgTable(
   },
   (table) => [
     uniqueIndex("cliente_documento_unique").on(table.documentoIdentificacao),
-    uniqueIndex("cliente_usuario_unique").on(table.usuarioId),
   ],
 );

@@ -13,7 +13,6 @@ export interface AuthUsuarioResponse {
   email: string;
   idJogador: string | null;
   idAdministrador: string | null;
-  idCliente: string | null;
   permissoes: string[];
 }
 
@@ -62,7 +61,6 @@ export class AuthService {
       idAdministrador: usuario.idAdministrador
         ? usuario.idAdministrador.toString()
         : null,
-      idCliente: usuario.idCliente ? usuario.idCliente.toString() : null,
       permissoes,
     };
 
@@ -78,7 +76,6 @@ export class AuthService {
         email: payload.email,
         idJogador: payload.idJogador,
         idAdministrador: payload.idAdministrador,
-        idCliente: payload.idCliente,
         permissoes,
       },
     };

@@ -129,7 +129,6 @@ describe("AuthService", () => {
       email: "Admin@Quadras.com",
       idJogador: "22",
       idAdministrador: "33",
-      idCliente: null,
       permissoes: ["ADMIN", "FINANCEIRO"],
     });
     expect(result).toEqual({
@@ -141,7 +140,6 @@ describe("AuthService", () => {
         email: "Admin@Quadras.com",
         idJogador: "22",
         idAdministrador: "33",
-        idCliente: null,
         permissoes: ["ADMIN", "FINANCEIRO"],
       },
     });

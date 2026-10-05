@@ -15,7 +15,6 @@ export interface RequestAuthUser {
   email: string;
   idJogador: string | null;
   idAdministrador: string | null;
-  idCliente?: string | null;
   permissoes: string[];
   iat?: number;
   exp?: number;

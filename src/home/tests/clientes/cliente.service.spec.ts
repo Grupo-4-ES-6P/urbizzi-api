@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { ClienteService } from "@modules/clientes/application/services/cliente.service";
-import { ClienteAccessService } from "@modules/clientes/application/services/cliente-access.service";
 import {
   ClienteEntity,
   StatusCliente,
@@ -12,19 +11,11 @@ import type { Mocked } from "jest-mock";
 
 const makeRepository = (): Mocked<ClienteRepository> => ({
   save: jest.fn(),
-  saveWithPendingAccess: jest.fn(),
   findById: jest.fn(),
   findByDocumento: jest.fn(),
   findManyPaginated: jest.fn(),
   update: jest.fn(),
 });
-
-const makeAccessService = (): Mocked<ClienteAccessService> =>
-  ({
-    preparePendingAccess: jest.fn(),
-    sendInvitation: jest.fn(),
-    deactivateClient: jest.fn(),
-  }) as unknown as Mocked<ClienteAccessService>;
 
 const makeCliente = (overrides: Partial<ClienteEntity> = {}) =>
   Object.assign(
@@ -43,8 +34,7 @@ describe("ClienteService", () => {
 
   it("cria cliente sem acesso normalizando documento e contato", async () => {
     const repository = makeRepository();
-    const accessService = makeAccessService();
-    const service = new ClienteService(repository, accessService);
+    const service = new ClienteService(repository);
     repository.findByDocumento.mockResolvedValue(null);
     repository.save.mockResolvedValue(makeCliente());
 
@@ -54,7 +44,7 @@ describe("ClienteService", () => {
       nome: "  Maria Silva ",
       telefone: "(45) 99999-9999",
       email: " MARIA@EXAMPLE.COM ",
-      criarAcesso: false,
+
     });
 
     expect(repository.save).toHaveBeenCalledWith(
@@ -66,63 +56,25 @@ describe("ClienteService", () => {
         status: StatusCliente.ATIVO,
       }),
     );
-    expect(result.conviteEnviado).toBeNull();
-  });
-
-  it("cria cliente e acesso na mesma operação de repositório", async () => {
-    const repository = makeRepository();
-    const accessService = makeAccessService();
-    const service = new ClienteService(repository, accessService);
-    const pending = {
-      email: "maria@example.com",
-      passwordHash: "hash",
-      tokenHash: "token-hash",
-      expiresAt: new Date(),
-      rawToken: "raw-token",
-    };
-    repository.findByDocumento.mockResolvedValue(null);
-    repository.saveWithPendingAccess.mockResolvedValue(
-      makeCliente({ usuarioId: 8n }),
-    );
-    accessService.preparePendingAccess.mockResolvedValue(pending);
-    accessService.sendInvitation.mockResolvedValue(true);
-
-    const result = await service.create({
-      tipoDocumento: TipoDocumentoCliente.CPF,
-      documentoIdentificacao: "52998224725",
-      nome: "Maria",
-      telefone: "45999999999",
-      email: "maria@example.com",
-      criarAcesso: true,
-    });
-
-    expect(repository.saveWithPendingAccess).toHaveBeenCalledWith(
-      expect.any(Object),
-      pending,
-    );
-    expect(accessService.sendInvitation).toHaveBeenCalledWith(
-      "maria@example.com",
-      "raw-token",
-    );
-    expect(result.conviteEnviado).toBe(true);
+    expect(result.cliente).toEqual(makeCliente({ dataCadastro: result.cliente.dataCadastro, dataAtualizacao: result.cliente.dataAtualizacao }));
   });
 
   it("rejeita CPF inválido", async () => {
-    const service = new ClienteService(makeRepository(), makeAccessService());
+    const service = new ClienteService(makeRepository());
     await expect(
       service.create({
         tipoDocumento: TipoDocumentoCliente.CPF,
         documentoIdentificacao: "11111111111",
         nome: "Maria",
         telefone: "45999999999",
-        criarAcesso: false,
+
       }),
     ).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it("rejeita documento duplicado", async () => {
     const repository = makeRepository();
-    const service = new ClienteService(repository, makeAccessService());
+    const service = new ClienteService(repository);
     repository.findByDocumento.mockResolvedValue(makeCliente());
     await expect(
       service.create({
@@ -130,22 +82,22 @@ describe("ClienteService", () => {
         documentoIdentificacao: "52998224725",
         nome: "Maria",
         telefone: "45999999999",
-        criarAcesso: false,
+
       }),
     ).rejects.toBeInstanceOf(ConflictException);
   });
 
-  it("desativa cadastro e acesso em cascata", async () => {
+  it("desativa somente o cadastro comercial", async () => {
     const repository = makeRepository();
-    const accessService = makeAccessService();
-    const service = new ClienteService(repository, accessService);
+    const service = new ClienteService(repository);
     repository.findById.mockResolvedValue(
       makeCliente({ status: StatusCliente.INATIVO }),
     );
 
+    repository.update.mockResolvedValue(makeCliente({ status: StatusCliente.INATIVO }));
     const result = await service.deactivate("1");
 
-    expect(accessService.deactivateClient).toHaveBeenCalledWith(1n);
+    expect(repository.update).toHaveBeenCalledWith(1n, { status: StatusCliente.INATIVO });
     expect(result.status).toBe(StatusCliente.INATIVO);
   });
 });

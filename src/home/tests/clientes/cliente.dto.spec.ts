@@ -27,7 +27,7 @@ describe("CreateClienteDto", () => {
     expect(errors.some((error) => error.property === "razaoSocial")).toBe(true);
   });
 
-  it("valida email de acesso quando informado", async () => {
+  it("rejeita os antigos campos de acesso", async () => {
     const dto = plainToInstance(CreateClienteDto, {
       tipoDocumento: TipoDocumentoCliente.CPF,
       documentoIdentificacao: "52998224725",
@@ -37,7 +37,7 @@ describe("CreateClienteDto", () => {
       emailAcesso: "email-invalido",
     });
 
-    const errors = await validate(dto);
-    expect(errors.some((error) => error.property === "emailAcesso")).toBe(true);
+    const errors = await validate(dto, { whitelist: true, forbidNonWhitelisted: true });
+    expect(errors.map((error) => error.property)).toEqual(expect.arrayContaining(["emailAcesso", "criarAcesso"]));
   });
 });

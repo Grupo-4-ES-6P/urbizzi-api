@@ -2,7 +2,6 @@ import { describe, expect, it, jest } from "@jest/globals";
 import { CreateClienteDto } from "@modules/clientes/application/dto/create-cliente.dto";
 import { UpdateClienteDto } from "@modules/clientes/application/dto/update-cliente.dto";
 import { ClienteService } from "@modules/clientes/application/services/cliente.service";
-import { ClienteAccessService } from "@modules/clientes/application/services/cliente-access.service";
 import {
   ClienteEntity,
   TipoDocumentoCliente,
@@ -26,10 +25,7 @@ describe("ClienteController", () => {
     const service = {
       findById: jest.fn().mockResolvedValue(cliente),
     } as unknown as Mocked<ClienteService>;
-    const controller = new ClienteController(
-      service,
-      {} as Mocked<ClienteAccessService>,
-    );
+    const controller = new ClienteController(service);
 
     const result = await controller.findById("1");
 
@@ -38,9 +34,10 @@ describe("ClienteController", () => {
         id: "1",
         nomeExibicao: "Maria Silva",
         dataCadastro: "2026-09-27T12:00:00.000Z",
-        acesso: null,
       }),
     );
+    expect(result).not.toHaveProperty("usuarioId");
+    expect(result).not.toHaveProperty("acesso");
   });
 
   it("protege desativação com permissão específica", () => {

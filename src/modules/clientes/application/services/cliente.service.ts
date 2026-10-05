@@ -18,7 +18,6 @@ import {
 import type { CreateClienteDto } from "../dto/create-cliente.dto";
 import type { FindClientesQueryDto } from "../dto/find-clientes-query.dto";
 import type { UpdateClienteDto } from "../dto/update-cliente.dto";
-import { ClienteAccessService } from "./cliente-access.service";
 
 export interface ClientePaginacao {
   page: number;
@@ -34,7 +33,6 @@ export interface ClientesPaginados {
 
 export interface ClienteCreateResult {
   cliente: ClienteEntity;
-  conviteEnviado: boolean | null;
 }
 
 @Injectable()
@@ -42,7 +40,6 @@ export class ClienteService {
   constructor(
     @Inject(CLIENTE_REPOSITORY)
     private readonly clienteRepository: ClienteRepository,
-    private readonly clienteAccessService: ClienteAccessService,
   ) {}
 
   async create(dto: CreateClienteDto): Promise<ClienteCreateResult> {
@@ -66,30 +63,7 @@ export class ClienteService {
       status: StatusCliente.ATIVO,
     };
 
-    if (!dto.criarAcesso) {
-      return {
-        cliente: await this.clienteRepository.save(input),
-        conviteEnviado: null,
-      };
-    }
-
-    const emailAcesso = dto.emailAcesso ?? dto.email;
-    if (!emailAcesso) {
-      throw new BadRequestException(
-        "emailAcesso ou email de contato é obrigatório para criar acesso.",
-      );
-    }
-    const pending =
-      await this.clienteAccessService.preparePendingAccess(emailAcesso);
-    const cliente = await this.clienteRepository.saveWithPendingAccess(
-      input,
-      pending,
-    );
-    const conviteEnviado = await this.clienteAccessService.sendInvitation(
-      pending.email,
-      pending.rawToken,
-    );
-    return { cliente, conviteEnviado };
+    return { cliente: await this.clienteRepository.save(input) };
   }
 
   async findById(id: string): Promise<ClienteEntity> {
@@ -186,9 +160,7 @@ export class ClienteService {
   }
 
   async deactivate(id: string): Promise<ClienteEntity> {
-    const parsedId = this.parseId(id);
-    await this.clienteAccessService.deactivateClient(parsedId);
-    return this.findById(id);
+    return this.changeStatus(id, StatusCliente.INATIVO);
   }
 
   async reactivate(id: string): Promise<ClienteEntity> {

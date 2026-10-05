@@ -22,6 +22,13 @@
       "when": 1790562943021,
       "tag": "0002_dapper_sunset_bain",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791159558343,
+      "tag": "0003_desvincula_cliente_usuario",
+      "breakpoints": true
     }
   ]
 }

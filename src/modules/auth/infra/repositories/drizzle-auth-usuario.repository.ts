@@ -1,4 +1,3 @@
-import { clienteSchema } from "@modules/clientes/infra/schemas/cliente.schema";
 import { usuariosSchema } from "@modules/usuarios/infra/schemas/usuario.schema";
 import { Injectable } from "@nestjs/common";
 import { DrizzleService } from "@shared/infra/database/drizzle/drizzle.service";
@@ -11,18 +10,16 @@ export class DrizzleAuthUsuarioRepository implements AuthUsuarioRepository {
   constructor(private readonly drizzleService: DrizzleService) {}
 
   async findByEmail(email: string): Promise<UsuarioAuthEntity | null> {
-    const [result] = await this.drizzleService.db
-      .select({ usuario: usuariosSchema, idCliente: clienteSchema.id })
+    const [usuario] = await this.drizzleService.db
+      .select()
       .from(usuariosSchema)
-      .leftJoin(clienteSchema, eq(clienteSchema.usuarioId, usuariosSchema.id))
       .where(eq(usuariosSchema.email, email))
       .limit(1);
 
-    if (!result) {
+    if (!usuario) {
       return null;
     }
 
-    const { usuario } = result;
 
     return new UsuarioAuthEntity({
       id: usuario.id,
@@ -32,7 +29,6 @@ export class DrizzleAuthUsuarioRepository implements AuthUsuarioRepository {
       idAdministrador: usuario.administradorId,
       permissoes: usuario.permissions,
       status: usuario.status,
-      idCliente: result.idCliente,
     });
   }
 }

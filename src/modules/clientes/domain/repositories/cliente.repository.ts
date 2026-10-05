@@ -30,26 +30,15 @@ export interface BuscarClientesPaginadoResultado {
 
 export type NovoClienteInput = Omit<
   ClienteEntityProps,
-  "id" | "usuarioId" | "dataCadastro" | "dataAtualizacao"
+  "id" | "dataCadastro" | "dataAtualizacao"
 >;
 
-export interface NovoAcessoPendenteInput {
-  email: string;
-  passwordHash: string;
-  tokenHash: string;
-  expiresAt: Date;
-}
-
 export type AtualizarClienteInput = Partial<
-  Omit<ClienteEntityProps, "id" | "usuarioId" | "dataCadastro">
+  Omit<ClienteEntityProps, "id" | "dataCadastro">
 >;
 
 export interface ClienteRepository {
   save(cliente: NovoClienteInput): Promise<ClienteEntity>;
-  saveWithPendingAccess(
-    cliente: NovoClienteInput,
-    acesso: NovoAcessoPendenteInput,
-  ): Promise<ClienteEntity>;
   findById(id: bigint): Promise<ClienteEntity | null>;
   findByDocumento(documento: string): Promise<ClienteEntity | null>;
   findManyPaginated(

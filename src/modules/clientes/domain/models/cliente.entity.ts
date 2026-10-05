@@ -19,11 +19,8 @@ export interface ClienteEntityProps {
   email?: string | null;
   origem?: string | null;
   status?: StatusCliente;
-  usuarioId?: bigint | null;
   dataCadastro?: Date;
   dataAtualizacao?: Date;
-  emailAcesso?: string | null;
-  statusAcesso?: string | null;
 }
 
 export class ClienteEntity {
@@ -37,11 +34,8 @@ export class ClienteEntity {
   readonly email: string | null;
   readonly origem: string | null;
   readonly status: StatusCliente;
-  readonly usuarioId: bigint | null;
   readonly dataCadastro: Date;
   readonly dataAtualizacao: Date;
-  readonly emailAcesso: string | null;
-  readonly statusAcesso: string | null;
 
   constructor(props: ClienteEntityProps) {
     this.id = props.id;
@@ -54,11 +48,8 @@ export class ClienteEntity {
     this.email = props.email ?? null;
     this.origem = props.origem ?? null;
     this.status = props.status ?? StatusCliente.ATIVO;
-    this.usuarioId = props.usuarioId ?? null;
     this.dataCadastro = props.dataCadastro ?? new Date();
     this.dataAtualizacao = props.dataAtualizacao ?? new Date();
-    this.emailAcesso = props.emailAcesso ?? null;
-    this.statusAcesso = props.statusAcesso ?? null;
   }
 
   get nomeExibicao(): string {
