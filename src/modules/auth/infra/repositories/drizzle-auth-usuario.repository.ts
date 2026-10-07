@@ -1,9 +1,9 @@
+import { usuariosSchema } from "@modules/usuarios/infra/schemas/usuario.schema";
 import { Injectable } from "@nestjs/common";
-import { eq } from "drizzle-orm";
 import { DrizzleService } from "@shared/infra/database/drizzle/drizzle.service";
+import { eq } from "drizzle-orm";
 import { UsuarioAuthEntity } from "../../domain/models/usuario-auth.entity";
 import type { AuthUsuarioRepository } from "../../domain/repositories/auth-usuario.repository";
-import { usuariosSchema } from "@modules/usuarios/infra/schemas/usuario.schema";
 
 @Injectable()
 export class DrizzleAuthUsuarioRepository implements AuthUsuarioRepository {
@@ -20,6 +20,7 @@ export class DrizzleAuthUsuarioRepository implements AuthUsuarioRepository {
       return null;
     }
 
+
     return new UsuarioAuthEntity({
       id: usuario.id,
       email: usuario.email,
@@ -27,6 +28,7 @@ export class DrizzleAuthUsuarioRepository implements AuthUsuarioRepository {
       idJogador: usuario.jogadorId,
       idAdministrador: usuario.administradorId,
       permissoes: usuario.permissions,
+      status: usuario.status,
     });
   }
 }

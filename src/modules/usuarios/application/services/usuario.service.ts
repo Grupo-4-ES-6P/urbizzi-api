@@ -48,14 +48,19 @@ export class UsuarioService {
         "administradorId",
       ),
       permissions: this.normalizePermissions(dto.permissions),
+      status: undefined,
     })!;
 
     await this.userRepository.create(user);
 
-    const saved = await this.userRepository.findByEmail(dto.email.toLowerCase());
+    const saved = await this.userRepository.findByEmail(
+      dto.email.toLowerCase(),
+    );
 
     if (!saved) {
-      throw new NotFoundException("Não foi possível recuperar o usuário criado.");
+      throw new NotFoundException(
+        "Não foi possível recuperar o usuário criado.",
+      );
     }
 
     return this.toResponse(saved);
@@ -105,15 +110,16 @@ export class UsuarioService {
       jogadorId:
         dto.jogadorId !== undefined
           ? this.parseOptionalBigInt(dto.jogadorId, "jogadorId")
-          : current.jogadorId ?? null,
+          : (current.jogadorId ?? null),
       administradorId:
         dto.administradorId !== undefined
           ? this.parseOptionalBigInt(dto.administradorId, "administradorId")
-          : current.administradorId ?? null,
+          : (current.administradorId ?? null),
       permissions:
         dto.permissions !== undefined
           ? this.normalizePermissions(dto.permissions)
           : current.permissions,
+      status: current.status,
     });
 
     if (!updatedUser) {
@@ -143,7 +149,10 @@ export class UsuarioService {
   }
 
   // chamado pelo AuthService durante o login
-  async validateCredentials(email: string, password: string): Promise<UsuarioPayload | null> {
+  async validateCredentials(
+    email: string,
+    password: string,
+  ): Promise<UsuarioPayload | null> {
     const user = await this.userRepository.findByEmail(email.toLowerCase());
     if (!user) return null;
 
@@ -163,6 +172,7 @@ export class UsuarioService {
       administradorId: user.administradorId
         ? user.administradorId.toString()
         : null,
+      status: user.status,
     };
   }
 
