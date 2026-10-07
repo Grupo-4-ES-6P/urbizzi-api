@@ -43,6 +43,13 @@
       "when": 1791160338476,
       "tag": "0005_desvincula_cliente_usuario",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790822489089,
+      "tag": "0006_add_bairro_module",
+      "breakpoints": true
     }
   ]
 }
