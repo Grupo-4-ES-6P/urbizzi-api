@@ -6,6 +6,10 @@ import { AppService } from "./app.service";
 import { AdministradorModule } from "./modules/administrador/administrador.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { LogradouroModule } from "./modules/logradouro/logradouro.module";
+import { BairroModule } from "./modules/bairro/bairro.module";
+import { ClientesModule } from "./modules/clientes/clientes.module";
+import { CidadeModule } from "./modules/cidade/cidade.module";
+import { LoteamentoModule } from "./modules/loteamento/loteamento.module";
 import { UsuariosModule } from "./modules/usuarios/usuarios.module";
 
 @Module({
@@ -16,8 +20,12 @@ import { UsuariosModule } from "./modules/usuarios/usuarios.module";
     SharedModule,
     AdministradorModule,
     AuthModule,
+    CidadeModule,
+    LoteamentoModule,
     UsuariosModule,
     LogradouroModule,
+    BairroModule,
+    ClientesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

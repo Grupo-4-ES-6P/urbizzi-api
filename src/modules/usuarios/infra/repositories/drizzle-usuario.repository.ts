@@ -17,6 +17,7 @@ export class DrizzleUsuarioRepository implements UsuarioRepository {
       jogadorId: user.jogadorId,
       administradorId: user.administradorId,
       permissions: user.permissions,
+      status: user.status,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -29,6 +30,7 @@ export class DrizzleUsuarioRepository implements UsuarioRepository {
         email: user.email,
         password: user.password,
         permissions: user.permissions,
+        status: user.status,
         updatedAt: new Date(),
       })
       .where(eq(usuariosSchema.id, user.id!));

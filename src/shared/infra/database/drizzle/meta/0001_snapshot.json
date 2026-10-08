@@ -1,5 +1,5 @@
 {
-  "id": "d0a105ce-a015-40af-b5d2-abf09ed9b36a",
+  "id": "5b6bf97e-d4cd-44dc-8aa2-0d85122eb154",
   "prevId": "21bdf480-a4ff-4d32-ada1-e945f3a20414",
   "version": "7",
   "dialect": "postgresql",
@@ -78,12 +78,12 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.logradouro": {
-      "name": "logradouro",
+    "public.cidade": {
+      "name": "cidade",
       "schema": "",
       "columns": {
-        "id_logradouro": {
-          "name": "id_logradouro",
+        "id_cidade": {
+          "name": "id_cidade",
           "type": "bigserial",
           "primaryKey": true,
           "notNull": true
@@ -91,12 +91,6 @@
         "nome": {
           "name": "nome",
           "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "id_cidade": {
-          "name": "id_cidade",
-          "type": "bigint",
           "primaryKey": false,
           "notNull": true
         }

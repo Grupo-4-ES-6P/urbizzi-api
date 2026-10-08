@@ -6,6 +6,16 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+# Codex local knowledge base
+.codex/
+
+# Local Markdown documentation
+/AGENTS.md
+/src/modules/administrador/README.md
+/src/modules/auth/README.md
+/src/modules/loteamento/README.md
+/src/modules/usuarios/README.md
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 

@@ -12,8 +12,50 @@
     {
       "idx": 1,
       "version": "7",
-      "when": 1790821673575,
-      "tag": "0001_add_logradouro_module",
+      "when": 1790124063946,
+      "tag": "0001_tricky_zarek",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790635790342,
+      "tag": "0002_white_fantastic_four",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791160338474,
+      "tag": "0003_spooky_owl",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791160338475,
+      "tag": "0004_dapper_sunset_bain",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791160338476,
+      "tag": "0005_desvincula_cliente_usuario",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790822489089,
+      "tag": "0006_add_bairro_module",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791418832648,
+      "tag": "0007_add_logradouro_module",
       "breakpoints": true
     }
   ]
