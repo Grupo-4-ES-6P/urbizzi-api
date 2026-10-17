@@ -40,6 +40,12 @@ export class AuthService {
       throw new UnauthorizedException("Email ou senha inválidos.");
     }
 
+    if (usuario.status !== "ATIVO") {
+      throw new UnauthorizedException(
+        "Usuário inativo ou aguardando ativação.",
+      );
+    }
+
     const senhaValida = await compare(data.senha, usuario.senhaHash);
 
     if (!senhaValida) {

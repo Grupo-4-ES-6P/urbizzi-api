@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
-import { DrizzleService } from "@shared/infra/database/drizzle/drizzle.service";
 import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
+import { DrizzleService } from "@shared/infra/database/drizzle/drizzle.service";
 import type { StringValue } from "ms";
 import { AuthService } from "./application/services/auth.service";
 import { AUTH_USUARIO_REPOSITORY } from "./domain/repositories/auth-usuario.repository";

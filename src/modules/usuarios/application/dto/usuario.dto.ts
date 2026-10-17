@@ -1,3 +1,4 @@
+import { Transform } from "class-transformer";
 import {
   IsArray,
   IsEmail,
@@ -7,7 +8,6 @@ import {
   MaxLength,
   MinLength,
 } from "class-validator";
-import { Transform } from "class-transformer";
 
 export class CreateUsuarioDto {
   @IsEmail()
@@ -84,4 +84,5 @@ export class UsuarioResponseDto {
   permissions!: string[];
   jogadorId!: string | null;
   administradorId!: string | null;
+  status!: string;
 }

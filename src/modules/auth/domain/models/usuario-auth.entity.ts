@@ -5,6 +5,7 @@ export interface UsuarioAuthEntityProps {
   idJogador: bigint | null;
   idAdministrador: bigint | null;
   permissoes: string[] | null;
+  status?: string;
 }
 
 export class UsuarioAuthEntity {
@@ -14,6 +15,7 @@ export class UsuarioAuthEntity {
   readonly idJogador: bigint | null;
   readonly idAdministrador: bigint | null;
   readonly permissoes: string[] | null;
+  readonly status: string;
 
   constructor(props: UsuarioAuthEntityProps) {
     this.id = props.id;
@@ -22,5 +24,6 @@ export class UsuarioAuthEntity {
     this.idJogador = props.idJogador;
     this.idAdministrador = props.idAdministrador;
     this.permissoes = props.permissoes;
+    this.status = props.status ?? "ATIVO";
   }
 }

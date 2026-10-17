@@ -1,10 +1,17 @@
+export enum StatusUsuario {
+  PENDENTE_ATIVACAO = "PENDENTE_ATIVACAO",
+  ATIVO = "ATIVO",
+  INATIVO = "INATIVO",
+}
+
 export class Usuario {
   private readonly _id?: bigint;
   private _email: string;
-  private _password: string;         // sempre armazenado como hash
-  private _jogadorId?: bigint;       // FK opcional para módulo de jogadores
-  private _administradorId?: bigint;       // FK opcional para módulo de administradores
+  private _password: string; // sempre armazenado como hash
+  private _jogadorId?: bigint; // FK opcional para módulo de jogadores
+  private _administradorId?: bigint; // FK opcional para módulo de administradores
   private _permissions: string[];
+  private _status: StatusUsuario;
   private readonly _createdAt?: Date;
   private readonly _updatedAt?: Date;
 
@@ -15,17 +22,41 @@ export class Usuario {
   }
 
   // getters...
-  get id() { return this._id; }
-  get email() { return this._email; }
-  get password() { return this._password; }
-  get jogadorId() { return this._jogadorId; }
-  get administradorId() { return this._administradorId; }
-  get permissions() { return this._permissions; }
+  get id() {
+    return this._id;
+  }
+  get email() {
+    return this._email;
+  }
+  get password() {
+    return this._password;
+  }
+  get jogadorId() {
+    return this._jogadorId;
+  }
+  get administradorId() {
+    return this._administradorId;
+  }
+  get permissions() {
+    return this._permissions;
+  }
+  get status() {
+    return this._status;
+  }
 
   // builders (padrão fluente)...
-  withEmail(email: string) { this._email = email; return this; }
-  withPassword(password: string) { this._password = password; return this; }
-  withPermissions(permissions: string[]) { this._permissions = permissions; return this; }
+  withEmail(email: string) {
+    this._email = email;
+    return this;
+  }
+  withPassword(password: string) {
+    this._password = password;
+    return this;
+  }
+  withPermissions(permissions: string[]) {
+    this._permissions = permissions;
+    return this;
+  }
 
   static restore(props?: {
     id?: bigint;
@@ -34,6 +65,7 @@ export class Usuario {
     jogadorId?: bigint | null;
     administradorId?: bigint | null;
     permissions: string[];
+    status?: StatusUsuario | `${StatusUsuario}`;
     createdAt?: Date;
     updatedAt?: Date;
   }): Usuario | null {
@@ -44,6 +76,7 @@ export class Usuario {
     user._jogadorId = props.jogadorId ?? undefined;
     user._administradorId = props.administradorId ?? undefined;
     user._permissions = props.permissions ?? [];
+    user._status = (props.status ?? StatusUsuario.ATIVO) as StatusUsuario;
     return user;
   }
 }
