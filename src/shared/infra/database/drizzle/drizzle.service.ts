@@ -1,5 +1,6 @@
 
 import { administradorSchema } from "@modules/administrador/infra/schemas/administrador.schema";
+import { logradouroSchema } from "@modules/logradouro/infra/schemas/logradouro.schema";
 import { bairroSchema } from "@modules/bairro/infra/schemas/bairro.schema";
 import { cidadeSchema } from "@modules/cidade/infra/schemas/cidade.schema";
 import { loteamentoSchema } from "@modules/loteamento/infra/schemas/loteamento.schema";
@@ -14,6 +15,7 @@ const schema = {
   cidadeSchema,
   loteamentoSchema,
   usuariosSchema,
+  logradouroSchema,
   bairroSchema,
   clienteSchema,
 };

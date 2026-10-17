@@ -5,6 +5,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AdministradorModule } from "./modules/administrador/administrador.module";
 import { AuthModule } from "./modules/auth/auth.module";
+import { LogradouroModule } from "./modules/logradouro/logradouro.module";
 import { BairroModule } from "./modules/bairro/bairro.module";
 import { ClientesModule } from "./modules/clientes/clientes.module";
 import { CidadeModule } from "./modules/cidade/cidade.module";
@@ -22,6 +23,7 @@ import { UsuariosModule } from "./modules/usuarios/usuarios.module";
     CidadeModule,
     LoteamentoModule,
     UsuariosModule,
+    LogradouroModule,
     BairroModule,
     ClientesModule,
   ],
