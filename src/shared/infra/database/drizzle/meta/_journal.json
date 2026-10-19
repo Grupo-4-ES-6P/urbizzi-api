@@ -64,6 +64,13 @@
       "when": 1790805639532,
       "tag": "0008_unknown_paibok",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792420733503,
+      "tag": "0009_add_anexo_module",
+      "breakpoints": true
     }
   ]
 }
