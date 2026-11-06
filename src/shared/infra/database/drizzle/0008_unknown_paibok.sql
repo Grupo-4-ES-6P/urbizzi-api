@@ -1,4 +1,4 @@
-CREATE TABLE "proposta" (
+CREATE TABLE IF NOT EXISTS "proposta" (
 	"id_proposta" serial PRIMARY KEY NOT NULL,
 	"valor" numeric NOT NULL,
 	"condicoes" text NOT NULL,

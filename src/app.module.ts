@@ -4,6 +4,7 @@ import { SharedModule } from "@shared/shared.module";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AdministradorModule } from "./modules/administrador/administrador.module";
+import { AnexoModule } from "./modules/anexo/anexo.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { LogradouroModule } from "./modules/logradouro/logradouro.module";
 import { BairroModule } from "./modules/bairro/bairro.module";
@@ -20,6 +21,7 @@ import { UsuariosModule } from "./modules/usuarios/usuarios.module";
     }),
     SharedModule,
     AdministradorModule,
+    AnexoModule,
     AuthModule,
     CidadeModule,
     LoteamentoModule,

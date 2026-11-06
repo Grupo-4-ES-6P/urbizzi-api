@@ -47,7 +47,7 @@
     {
       "idx": 6,
       "version": "7",
-      "when": 1790822489089,
+      "when": 1791160338477,
       "tag": "0006_add_bairro_module",
       "breakpoints": true
     },
@@ -61,8 +61,15 @@
     {
       "idx": 8,
       "version": "7",
-      "when": 1790805639532,
+      "when": 1791418832649,
       "tag": "0008_unknown_paibok",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792420733503,
+      "tag": "0009_add_anexo_module",
       "breakpoints": true
     }
   ]
