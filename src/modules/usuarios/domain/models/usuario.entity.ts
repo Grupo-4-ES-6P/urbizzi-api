@@ -4,79 +4,89 @@ export enum StatusUsuario {
   INATIVO = "INATIVO",
 }
 
-export class Usuario {
-  private readonly _id?: bigint;
-  private _email: string;
-  private _password: string; // sempre armazenado como hash
-  private _jogadorId?: bigint; // FK opcional para módulo de jogadores
-  private _administradorId?: bigint; // FK opcional para módulo de administradores
-  private _permissions: string[];
-  private _status: StatusUsuario;
-  private readonly _createdAt?: Date;
-  private readonly _updatedAt?: Date;
+export interface UsuarioProps {
+  id?: bigint;
+  name: string;
+  email: string;
+  password: string;
+  permissions: string[];
+  status?: StatusUsuario | `${StatusUsuario}`;
+  anexoId?: bigint | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
-  private constructor(id?: bigint, createdAt?: Date, updatedAt?: Date) {
-    this._id = id;
-    this._createdAt = createdAt;
-    this._updatedAt = updatedAt;
+export class Usuario {
+  private _id?: bigint;
+  private _name?: string;
+  private _email?: string;
+  private _password?: string; // sempre armazenado como hash
+  private _permissions?: string[];
+  private _status?: StatusUsuario;
+  private _anexoId?: bigint;
+  private readonly _createdAt?: Date;
+  private _updatedAt?: Date;
+
+  constructor(date?: Date) {
+    this._createdAt = date ?? new Date();
   }
 
   // getters...
   get id() {
-    return this._id;
+    return this._id ?? BigInt(0);
+  }
+  get name() {
+    return this._name ?? '';
   }
   get email() {
-    return this._email;
+    return this._email ?? '';
   }
   get password() {
-    return this._password;
-  }
-  get jogadorId() {
-    return this._jogadorId;
-  }
-  get administradorId() {
-    return this._administradorId;
+    return this._password ?? '';
   }
   get permissions() {
-    return this._permissions;
+    return this._permissions ?? [];
   }
   get status() {
-    return this._status;
+    return this._status ?? StatusUsuario.INATIVO;
+  }
+  get anexoId() {
+    return this._anexoId ?? BigInt(0);
+  }
+  get dateCreated() {
+    return this._createdAt;
+  }
+  get dateUpdated() {
+    return this._updatedAt ?? new Date();
   }
 
-  // builders (padrão fluente)...
-  withEmail(email: string) {
+  //setters
+  set id(id: bigint) {
+    if (this._id != undefined) {
+      throw "id alredy defined lmao";
+    } 
+    this._id = id;
+  }
+  set name(name: String) {
+    this.name = name;
+  }
+  set email(email: string) {
     this._email = email;
-    return this;
   }
-  withPassword(password: string) {
+  set password(password: string) {
     this._password = password;
-    return this;
   }
-  withPermissions(permissions: string[]) {
+  set permissions(permissions: string[]) {
     this._permissions = permissions;
-    return this;
+  }
+  set status(status: StatusUsuario) {
+    this._status = status;
+  }
+  set anexoId(anexoId: bigint) {
+    this._anexoId = anexoId;
+  }
+  set dateUpdated(dateUpdated: Date) {
+    this._updatedAt = dateUpdated;
   }
 
-  static restore(props?: {
-    id?: bigint;
-    email: string;
-    password: string;
-    jogadorId?: bigint | null;
-    administradorId?: bigint | null;
-    permissions: string[];
-    status?: StatusUsuario | `${StatusUsuario}`;
-    createdAt?: Date;
-    updatedAt?: Date;
-  }): Usuario | null {
-    if (!props) return null;
-    const user = new Usuario(props.id, props.createdAt, props.updatedAt);
-    user._email = props.email;
-    user._password = props.password;
-    user._jogadorId = props.jogadorId ?? undefined;
-    user._administradorId = props.administradorId ?? undefined;
-    user._permissions = props.permissions ?? [];
-    user._status = (props.status ?? StatusUsuario.ATIVO) as StatusUsuario;
-    return user;
-  }
 }
