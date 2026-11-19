@@ -11,8 +11,6 @@ import { LoginDto } from "../dto/login.dto";
 export interface AuthUsuarioResponse {
   id: string;
   email: string;
-  idJogador: string | null;
-  idAdministrador: string | null;
   permissoes: string[];
 }
 
@@ -57,10 +55,6 @@ export class AuthService {
     const payload = {
       sub: usuario.id.toString(),
       email: usuario.email,
-      idJogador: usuario.idJogador ? usuario.idJogador.toString() : null,
-      idAdministrador: usuario.idAdministrador
-        ? usuario.idAdministrador.toString()
-        : null,
       permissoes,
     };
 
@@ -74,8 +68,6 @@ export class AuthService {
       usuario: {
         id: payload.sub,
         email: payload.email,
-        idJogador: payload.idJogador,
-        idAdministrador: payload.idAdministrador,
         permissoes,
       },
     };
