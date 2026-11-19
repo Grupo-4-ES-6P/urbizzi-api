@@ -1,8 +1,6 @@
-import {
-  CreateUsuarioDto,
-  UpdateUsuarioDto,
-  type UsuarioResponseDto,
-} from "@modules/usuarios/application/dto/usuario.dto";
+import { CreateUsuarioDto } from "@modules/usuarios/application/dto/usuario-create.dto";
+import { UpdateUsuarioDto } from "@modules/usuarios/application/dto/usuario-update.dto";
+import type { UsuarioResponseDto } from "@modules/usuarios/application/dto/usuario-response.dto";
 import { UsuarioService } from "@modules/usuarios/application/services/usuario.service";
 import {
   Body,
@@ -16,6 +14,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "@shared/guards/jwt-auth.guard";
+import { Public } from "@shared/decorators/public.decorator";
 
 @UseGuards(JwtAuthGuard)
 @Controller("users")
@@ -32,6 +31,7 @@ export class UsuarioController {
     return this.userService.findById(id);
   }
 
+  @Public()
   @Post()
   async create(@Body() body: CreateUsuarioDto): Promise<UsuarioResponseDto> {
     return this.userService.create(body);
