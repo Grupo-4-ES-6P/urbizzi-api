@@ -3,7 +3,6 @@ import { ConfigModule } from "@nestjs/config";
 import { SharedModule } from "@shared/shared.module";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { AdministradorModule } from "./modules/administrador/administrador.module";
 import { AnexoModule } from "./modules/anexo/anexo.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { LogradouroModule } from "./modules/logradouro/logradouro.module";
@@ -20,7 +19,6 @@ import { UsuariosModule } from "./modules/usuarios/usuarios.module";
       isGlobal: true,
     }),
     SharedModule,
-    AdministradorModule,
     AnexoModule,
     AuthModule,
     CidadeModule,
