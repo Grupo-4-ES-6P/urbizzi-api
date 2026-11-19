@@ -4,6 +4,7 @@ import { DrizzleService } from "@shared/infra/database/drizzle/drizzle.service";
 import { eq } from "drizzle-orm";
 import { UsuarioAuthEntity } from "../../domain/models/usuario-auth.entity";
 import type { AuthUsuarioRepository } from "../../domain/repositories/auth-usuario.repository";
+import { UsuarioAuthBuilder } from "@modules/auth/domain/builder/usuario-auth.builder";
 
 @Injectable()
 export class DrizzleAuthUsuarioRepository implements AuthUsuarioRepository {
@@ -20,15 +21,13 @@ export class DrizzleAuthUsuarioRepository implements AuthUsuarioRepository {
       return null;
     }
 
-
-    return new UsuarioAuthEntity({
-      id: usuario.id,
-      email: usuario.email,
-      senhaHash: usuario.password,
-      idJogador: usuario.jogadorId,
-      idAdministrador: usuario.administradorId,
-      permissoes: usuario.permissions,
-      status: usuario.status,
-    });
+    return new UsuarioAuthBuilder(usuario.id)
+      .withName(usuario.name)
+      .withEmail(usuario.email)
+      .withHashPassword(usuario.password)
+      .withAnexoId(usuario.anexoId)
+      .withPermissions(usuario.permissions)
+      .withStatus(usuario.status)
+      .build();
   }
 }
