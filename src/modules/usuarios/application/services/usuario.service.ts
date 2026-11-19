@@ -1,9 +1,7 @@
-import {
-  CreateUsuarioDto,
-  UpdateUsuarioDto,
-  type UsuarioResponseDto,
-} from "@modules/usuarios/application/dto/usuario.dto";
-import { Usuario } from "@modules/usuarios/domain/models/usuario.entity";
+import { CreateUsuarioDto } from "../dto/usuario-create.dto";
+import { UpdateUsuarioDto } from "@modules/usuarios/application/dto/usuario-update.dto";
+import type { UsuarioResponseDto } from "../dto/usuario-response.dto";
+import { StatusUsuario, Usuario } from "@modules/usuarios/domain/models/usuario.entity";
 import {
   USUARIO_REPOSITORY,
   type UsuarioRepository,
@@ -16,6 +14,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import bcrypt from "bcryptjs";
+import { UsuarioBuilder } from "@modules/usuarios/domain/builder/usuario.builder";
 
 export interface UsuarioPayload {
   id: bigint;
@@ -25,6 +24,7 @@ export interface UsuarioPayload {
 
 @Injectable()
 export class UsuarioService {
+
   constructor(
     @Inject(USUARIO_REPOSITORY)
     private readonly userRepository: UsuarioRepository,
@@ -39,17 +39,14 @@ export class UsuarioService {
     // hash da senha ANTES de persistir
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    const user = Usuario.restore({
-      email: dto.email.toLowerCase(),
-      password: hashedPassword,
-      jogadorId: this.parseOptionalBigInt(dto.jogadorId, "jogadorId"),
-      administradorId: this.parseOptionalBigInt(
-        dto.administradorId,
-        "administradorId",
-      ),
-      permissions: this.normalizePermissions(dto.permissions),
-      status: undefined,
-    })!;
+    const user = new UsuarioBuilder()
+      .withName(dto.name)
+      .withEmail(dto.email)
+      .withPassword(hashedPassword)
+      .withStatus(dto.status)
+      .withPermissions(this.normalizePermissions(dto.permissions))
+      .withAnexoId(dto.anexoId)
+      .build()
 
     await this.userRepository.create(user);
 
@@ -103,24 +100,20 @@ export class UsuarioService {
       ? await bcrypt.hash(dto.password, 10)
       : current.password;
 
-    const updatedUser = Usuario.restore({
-      id: current.id,
-      email,
-      password,
-      jogadorId:
-        dto.jogadorId !== undefined
-          ? this.parseOptionalBigInt(dto.jogadorId, "jogadorId")
-          : (current.jogadorId ?? null),
-      administradorId:
-        dto.administradorId !== undefined
-          ? this.parseOptionalBigInt(dto.administradorId, "administradorId")
-          : (current.administradorId ?? null),
-      permissions:
-        dto.permissions !== undefined
-          ? this.normalizePermissions(dto.permissions)
-          : current.permissions,
-      status: current.status,
-    });
+    const updatedUser = new UsuarioBuilder()
+      .withName(dto.name??"")
+      .withEmail(dto.email??"")
+      .withPassword(password)
+      .withStatus(dto.status??StatusUsuario.INATIVO)
+      .withPermissions(
+        dto.permissions !== undefined 
+        ? this.normalizePermissions(dto.permissions) 
+        : current.permissions)
+      .withAnexoId(
+        dto.anexoId !== undefined 
+        ? dto.anexoId 
+        : current.anexoId)
+      .build()
 
     if (!updatedUser) {
       throw new NotFoundException("Usuário não encontrado.");
@@ -148,6 +141,19 @@ export class UsuarioService {
     await this.userRepository.delete(parsedId);
   }
 
+  // common
+
+  private toResponse(user: Usuario): UsuarioResponseDto {
+    return {
+      id: user.id.toString(),
+      name: user.name.toString(),
+      email: user.email,
+      status: user.status,
+      permissions: user.permissions,
+      anexoId: user.anexoId.toString(),
+    };
+  }
+
   // chamado pelo AuthService durante o login
   async validateCredentials(
     email: string,
@@ -163,34 +169,10 @@ export class UsuarioService {
     return { id: user.id!, email: user.email, permissions: user.permissions };
   }
 
-  private toResponse(user: Usuario): UsuarioResponseDto {
-    return {
-      id: user.id ? user.id.toString() : "",
-      email: user.email,
-      permissions: user.permissions,
-      jogadorId: user.jogadorId ? user.jogadorId.toString() : null,
-      administradorId: user.administradorId
-        ? user.administradorId.toString()
-        : null,
-      status: user.status,
-    };
-  }
-
   private normalizePermissions(permissions: string[]): string[] {
     return permissions
       .map((permission) => permission.trim().toUpperCase())
       .filter(Boolean);
-  }
-
-  private parseOptionalBigInt(
-    value: string | undefined,
-    fieldName: string,
-  ): bigint | null {
-    if (value === undefined || value.trim().length === 0) {
-      return null;
-    }
-
-    return this.parseBigInt(value, fieldName);
   }
 
   private parseBigInt(value: string, fieldName: string): bigint {
@@ -202,4 +184,5 @@ export class UsuarioService {
 
     return BigInt(normalizedValue);
   }
+
 }
