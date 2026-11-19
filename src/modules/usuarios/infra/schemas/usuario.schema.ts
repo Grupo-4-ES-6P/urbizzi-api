@@ -1,5 +1,4 @@
-//import { jogadorSchema } from "@jogador/infra/schemas/jogador.schema";
-//import { administradorSchema} from "@administrador/infra/schemas/administrador.schema";
+import { anexoSchema } from "@modules/anexo/infra/schemas/anexo.schema";
 
 import {
   bigserial,
@@ -7,6 +6,7 @@ import {
   pgTable,
   text,
   timestamp,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 export const statusUsuarioEnum = pgEnum("status_usuario", [
@@ -17,12 +17,12 @@ export const statusUsuarioEnum = pgEnum("status_usuario", [
 
 export const usuariosSchema = pgTable("usuarios", {
   id: bigserial({ mode: "bigint" }).primaryKey().notNull().unique(),
+  name: varchar("name").notNull(),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
-  jogadorId: bigserial("jogador_id", { mode: "bigint" }), // .references(() => jogadorSchema.id), // FK opcional
-  administradorId: bigserial("administrador_id", { mode: "bigint" }), // .references(() => administardorSchema.id), // FK opcional
   permissions: text("permissions").array().notNull(),
-  status: statusUsuarioEnum("status").notNull().default("ATIVO"),
+  status: statusUsuarioEnum("status").notNull().default("PENDENTE_ATIVACAO"),
+  anexoId: bigserial("anexo_id", { mode: "bigint" }).references(() => anexoSchema.idAnexo), // FK opcional
   createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
 });
