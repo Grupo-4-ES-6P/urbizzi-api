@@ -1,4 +1,5 @@
 import { Usuario } from "@modules/usuarios/domain/models/usuario.entity";
+import { UsuarioBuilder } from "@modules/usuarios/domain/builder/usuario.builder";
 import type { UsuarioRepository } from "@modules/usuarios/domain/repositories/usuario-repository.interface";
 import { usuariosSchema } from "@modules/usuarios/infra/schemas/usuario.schema";
 import { Injectable } from "@nestjs/common";
@@ -12,12 +13,12 @@ export class DrizzleUsuarioRepository implements UsuarioRepository {
   async create(user: Usuario): Promise<void> {
     console.log(user);
     await this.drizzleService.db.insert(usuariosSchema).values({
+      name: user.name.toString(),
       email: user.email,
       password: user.password,
-      jogadorId: user.jogadorId,
-      administradorId: user.administradorId,
       permissions: user.permissions,
       status: user.status,
+      anexoId: user.anexoId,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -27,10 +28,12 @@ export class DrizzleUsuarioRepository implements UsuarioRepository {
     await this.drizzleService.db
       .update(usuariosSchema)
       .set({
+        name: user.name.toString(),
         email: user.email,
         password: user.password,
         permissions: user.permissions,
         status: user.status,
+        anexoId: user.anexoId,
         updatedAt: new Date(),
       })
       .where(eq(usuariosSchema.id, user.id!));
@@ -49,7 +52,7 @@ export class DrizzleUsuarioRepository implements UsuarioRepository {
       .where(eq(usuariosSchema.id, id))
       .limit(1);
 
-    return Usuario.restore(result[0]);
+    return UsuarioBuilder.restore(result[0]);
   }
 
   async findByEmail(email: string): Promise<Usuario | null> {
@@ -59,11 +62,11 @@ export class DrizzleUsuarioRepository implements UsuarioRepository {
       .where(eq(usuariosSchema.email, email.toLowerCase()))
       .limit(1);
 
-    return Usuario.restore(result[0]);
+    return UsuarioBuilder.restore(result[0]);
   }
 
   async findAll(): Promise<Usuario[]> {
     const rows = await this.drizzleService.db.select().from(usuariosSchema);
-    return rows.map((row) => Usuario.restore(row)!);
+    return rows.map((row) => UsuarioBuilder.restore(row)!);
   }
 }
