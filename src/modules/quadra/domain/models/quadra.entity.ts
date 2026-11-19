@@ -26,8 +26,8 @@ export class Quadra {
     get identificacao(): string | null {
         return this._identificacao === undefined ? null : this._identificacao!;
     }
-    get idLoteamento(): bigint | null {
-        return this.idLoteamento === undefined ? null : this._idLoteamento!;
+    get idLoteamento(): bigint {
+        return this.idLoteamento === undefined ? BigInt(0) : this._idLoteamento!;
     }
     get createdAt(): Date {
         return this._createdAt;
