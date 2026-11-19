@@ -30,7 +30,7 @@ export class QuadraBuilder {
         return {...this.quadra} as Quadra;
     }
     
-    restore(props: QuadraEntityProps) {
+    static restore(props: QuadraEntityProps) {
         return new QuadraBuilder(props.id)
             .withIdentificacao(props.identificacao)
             .withIdLoteamento(props.idLoteamento)
