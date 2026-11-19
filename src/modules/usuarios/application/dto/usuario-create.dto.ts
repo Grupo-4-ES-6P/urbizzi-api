@@ -1,7 +1,10 @@
+import { StatusUsuario } from "@modules/usuarios/domain/models/usuario.entity";
 import { ApiProperty } from "@nestjs/swagger";
 import {
+  IsNumber,
   IsArray,
   IsEmail,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -10,6 +13,12 @@ import {
 } from "class-validator";
 
 export class CreateUsuarioDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(256)
+  name!: string;
+
   @ApiProperty()
   @IsString()
   @IsEmail()
@@ -23,21 +32,19 @@ export class CreateUsuarioDto {
   @MaxLength(256)
   password!: string;
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsInt({
-    message: "jogadorId deve ser um inteiro positivo.",
-  })
-  jogadorId?: bigint | undefined;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsInt({
-    message: "administradorId deve ser um inteiro positivo.",
-  })
-  administradorId?: bigint | undefined;
+  @ApiProperty({enum: StatusUsuario})
+  @IsEnum(StatusUsuario)
+  @IsNotEmpty()
+  @MaxLength(256)
+  status!: string;
 
   @ApiProperty({ isArray: true, type: String })
   @IsArray()
   permissions!: string[];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  anexoId?: bigint | undefined;
+  
 }
