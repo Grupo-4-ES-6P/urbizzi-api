@@ -71,6 +71,20 @@
       "when": 1792420733503,
       "tag": "0009_add_anexo_module",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795027666798,
+      "tag": "0010_exotic_mister_fear",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795031018969,
+      "tag": "0011_lean_chronomancer",
+      "breakpoints": true
     }
   ]
 }

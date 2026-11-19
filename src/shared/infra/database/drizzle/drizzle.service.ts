@@ -1,5 +1,3 @@
-
-import { administradorSchema } from "@modules/administrador/infra/schemas/administrador.schema";
 import { logradouroSchema } from "@modules/logradouro/infra/schemas/logradouro.schema";
 import { bairroSchema } from "@modules/bairro/infra/schemas/bairro.schema";
 import { cidadeSchema } from "@modules/cidade/infra/schemas/cidade.schema";
@@ -12,7 +10,6 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
 const schema = {
-  administradorSchema,
   cidadeSchema,
   loteamentoSchema,
   usuariosSchema,
