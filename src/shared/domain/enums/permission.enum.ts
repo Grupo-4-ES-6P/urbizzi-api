@@ -11,6 +11,13 @@ export enum Permission {
   ADMIN_UPDATE = "admin:update",
   ADMIN_DELETE = "admin:delete",
 
+  // quadra
+
+  QUADRA_WRITE = "quadra:write",
+  QUADRA_READ = "quadra:read",
+  QUADRA_UPDATE = "quadra:update",
+  QUADRA_DELETE = "quadra:delete",
+
   CLIENTE_CRIAR = "CLIENTE_CRIAR",
   CLIENTE_VISUALIZAR = "CLIENTE_VISUALIZAR",
   CLIENTE_ATUALIZAR = "CLIENTE_ATUALIZAR",
