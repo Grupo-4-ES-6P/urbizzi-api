@@ -8,5 +8,6 @@ export interface QuadraRepository {
     delete(id: bigint): Promise<void>;
     findAll(): Promise<Quadra[]>;
     findById(id: bigint): Promise<Quadra | null>;
+    findByIdentificacao(identificacao: string): Promise<Quadra | null>;
     findByLoteamento(idLoteamento: bigint): Promise<Quadra[]>;
 }

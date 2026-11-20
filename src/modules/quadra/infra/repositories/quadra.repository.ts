@@ -47,7 +47,17 @@ export class DrizzleQuadraRepository implements QuadraRepository {
             .where(eq(quadraSchema.id, id))
             .limit(1);
         
-            return QuadraBuilder.restore(result[0]);
+        return QuadraBuilder.restore(result[0]);
+    }
+
+    async findByIdentificacao(identificacao: string): Promise<Quadra | null> {
+        const result = await this.drizzleService.db
+            .select()
+            .from(quadraSchema)
+            .where(eq(quadraSchema.identificacao, identificacao))
+            .limit(1);
+
+        return QuadraBuilder.restore(result[0]);
     }
 
     async findByLoteamento(idLoteamento: bigint): Promise<Quadra[]> {
