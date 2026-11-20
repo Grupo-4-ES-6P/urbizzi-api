@@ -100,11 +100,11 @@ export class UsuarioService {
       ? await bcrypt.hash(dto.password, 10)
       : current.password;
 
-    const updatedUser = new UsuarioBuilder()
-      .withName(dto.name??"")
-      .withEmail(dto.email??"")
+    const updatedUser = new UsuarioBuilder(parsedId)
+      .withName(dto.name??current.name.toString())
+      .withEmail(dto.email??current.email)
       .withPassword(password)
-      .withStatus(dto.status??StatusUsuario.INATIVO)
+      .withStatus(dto.status??current.status)
       .withPermissions(
         dto.permissions !== undefined 
         ? this.normalizePermissions(dto.permissions) 
@@ -113,6 +113,7 @@ export class UsuarioService {
         dto.anexoId !== undefined 
         ? dto.anexoId 
         : current.anexoId)
+      .withUpdatedAt(new Date())
       .build()
 
     if (!updatedUser) {
