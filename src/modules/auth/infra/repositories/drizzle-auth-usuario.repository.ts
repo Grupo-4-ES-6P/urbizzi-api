@@ -28,6 +28,14 @@ export class DrizzleAuthUsuarioRepository implements AuthUsuarioRepository {
       .withAnexoId(usuario.anexoId)
       .withPermissions(usuario.permissions)
       .withStatus(usuario.status)
+      .withPerfil(usuario.perfil)
       .build();
+  }
+
+  async registrarAcesso(id: bigint): Promise<void> {
+    await this.drizzleService.db
+      .update(usuariosSchema)
+      .set({ ultimoAcesso: new Date() })
+      .where(eq(usuariosSchema.id, id));
   }
 }

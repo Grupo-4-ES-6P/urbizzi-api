@@ -1,3 +1,4 @@
+import { Perfil } from "@modules/permissoes/domain/permissoes.catalogo";
 import { StatusUsuario } from "@modules/usuarios/domain/models/usuario.entity";
 import {
   USUARIO_REPOSITORY,
@@ -41,7 +42,8 @@ export class UsuarioSeedService implements OnApplicationBootstrap {
         email,
         password,
         status: StatusUsuario.ATIVO,
-        permissions: ["ADMIN"],
+        perfil: Perfil.ADMINISTRADOR,
+        permissions: [],
       });
 
       this.logger.log(`Administrador inicial criado: ${email}`);

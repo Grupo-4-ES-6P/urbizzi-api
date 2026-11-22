@@ -1,3 +1,4 @@
+import { Perfil } from "@modules/permissoes/domain/permissoes.catalogo";
 import { StatusUsuario } from "@modules/usuarios/domain/models/usuario.entity";
 import { ApiProperty } from "@nestjs/swagger";
 import {
@@ -10,6 +11,7 @@ import {
   IsOptional,
   IsString,
   MaxLength,
+  MinLength,
 } from "class-validator";
 
 export class CreateUsuarioDto {
@@ -29,6 +31,7 @@ export class CreateUsuarioDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @MinLength(6)
   @MaxLength(256)
   password!: string;
 
@@ -38,9 +41,16 @@ export class CreateUsuarioDto {
   @MaxLength(256)
   status!: string;
 
-  @ApiProperty({ isArray: true, type: String })
+  @ApiProperty({ enum: Perfil, required: false, default: Perfil.CORRETOR })
+  @IsOptional()
+  @IsEnum(Perfil)
+  perfil?: Perfil;
+
+  @ApiProperty({ isArray: true, type: String, required: false })
+  @IsOptional()
   @IsArray()
-  permissions!: string[];
+  @IsString({ each: true })
+  permissions?: string[];
 
   @ApiProperty({ required: false })
   @IsOptional()

@@ -10,6 +10,7 @@ import { BairroModule } from "./modules/bairro/bairro.module";
 import { ClientesModule } from "./modules/clientes/clientes.module";
 import { CidadeModule } from "./modules/cidade/cidade.module";
 import { LoteamentoModule } from "./modules/loteamento/loteamento.module";
+import { PermissoesModule } from "./modules/permissoes/permissoes.module";
 import { PropostaModule } from "./modules/proposta/proposta.module";
 import { UsuariosModule } from "./modules/usuarios/usuarios.module";
 import { QuadraModule } from "@modules/quadra/quadra.module";
@@ -24,6 +25,7 @@ import { QuadraModule } from "@modules/quadra/quadra.module";
     AuthModule,
     CidadeModule,
     LoteamentoModule,
+    PermissoesModule,
     PropostaModule,
     UsuariosModule,
     LogradouroModule,

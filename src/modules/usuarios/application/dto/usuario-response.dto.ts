@@ -6,5 +6,7 @@ export class UsuarioResponseDto {
   email!: string;
   status!: StatusUsuario | string;
   permissions!: string[];
+  perfil!: string;
+  ultimoAcesso!: string | null;
   anexoId?: string | null;
 }

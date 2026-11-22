@@ -1,3 +1,4 @@
+import { Perfil } from "@modules/permissoes/domain/permissoes.catalogo";
 import { 
     Usuario, 
     StatusUsuario, 
@@ -5,7 +6,7 @@ import {
 } from "../models/usuario.entity";
 
 export class UsuarioBuilder {
-    private usuario: Partial<Usuario> = {status: StatusUsuario.PENDENTE_ATIVACAO}
+    private usuario: Partial<Usuario> = {status: StatusUsuario.PENDENTE_ATIVACAO, perfil: Perfil.CORRETOR}
 
     constructor (id?: bigint) {
         this.usuario.id = id;
@@ -45,6 +46,16 @@ export class UsuarioBuilder {
         this.usuario.anexoId = anexoId;
         return this;
     }
+    withPerfil(perfil?: Perfil | string): UsuarioBuilder {
+        if (perfil && Object.values(Perfil).includes(perfil as Perfil)) {
+            this.usuario.perfil = perfil as Perfil;
+        }
+        return this;
+    }
+    withUltimoAcesso(ultimoAcesso?: Date | null): UsuarioBuilder {
+        this.usuario.ultimoAcesso = ultimoAcesso ?? null;
+        return this;
+    }
     withUpdatedAt(updated_at: Date): UsuarioBuilder {
         this.usuario.dateUpdated = updated_at;
         return this;
@@ -62,6 +73,8 @@ export class UsuarioBuilder {
         .withPermissions(props.permissions)
         .withStatus(props.status!)
         .withAnexoId(props.anexoId!)
+        .withPerfil(props.perfil)
+        .withUltimoAcesso(props.ultimoAcesso)
         .withUpdatedAt(props.updatedAt!)
         .build();
     return user;

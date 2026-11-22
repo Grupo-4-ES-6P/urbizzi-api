@@ -1,10 +1,11 @@
+import { Perfil } from "@modules/permissoes/domain/permissoes.catalogo";
 import { 
     UsuarioAuthEntity,
     UsuarioAuthEntityProps
 } from "../models/usuario-auth.entity";
 
 export class UsuarioAuthBuilder {
-    usuarioAuth: Partial<UsuarioAuthEntity> = {}
+    usuarioAuth: Partial<UsuarioAuthEntity> = { perfil: Perfil.CORRETOR }
 
     constructor(id: bigint) {
         this.usuarioAuth.id = id;
@@ -34,6 +35,10 @@ export class UsuarioAuthBuilder {
         this.usuarioAuth.status = status;
         return this;
     }
+    withPerfil(perfil: string): UsuarioAuthBuilder {
+        this.usuarioAuth.perfil = perfil as Perfil;
+        return this;
+    }
     build(): UsuarioAuthEntity {
         return {...this.usuarioAuth} as UsuarioAuthEntity;
     }
@@ -46,6 +51,7 @@ export class UsuarioAuthBuilder {
             .withAnexoId(props.anexoId)
             .withPermissions(props.permissoes)
             .withStatus(props.status)
+            .withPerfil(props.perfil ?? Perfil.CORRETOR)
             .build();
     }
 

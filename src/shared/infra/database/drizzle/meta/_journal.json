@@ -99,6 +99,13 @@
       "when": 1795333589401,
       "tag": "0013_usuario_anexo_opcional",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1795334614563,
+      "tag": "0014_perfis_e_permissoes",
+      "breakpoints": true
     }
   ]
 }

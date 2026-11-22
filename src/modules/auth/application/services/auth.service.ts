@@ -1,6 +1,7 @@
 import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
+import { PermissaoService } from "@modules/permissoes/application/services/permissao.service";
 import { compare } from "bcryptjs";
 import {
   AUTH_USUARIO_REPOSITORY,
@@ -10,7 +11,9 @@ import { LoginDto } from "../dto/login.dto";
 
 export interface AuthUsuarioResponse {
   id: string;
+  nome: string;
   email: string;
+  perfil: string;
   permissoes: string[];
 }
 
@@ -28,6 +31,7 @@ export class AuthService {
     private readonly authUsuarioRepository: AuthUsuarioRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly permissaoService: PermissaoService,
   ) {}
 
   async login(data: LoginDto): Promise<AuthLoginResponse> {
@@ -50,7 +54,10 @@ export class AuthService {
       throw new UnauthorizedException("Email ou senha inválidos.");
     }
 
-    const permissoes = this.parsePermissoes(usuario.permissoes);
+    const permissoes = await this.permissaoService.permissoesDoUsuario(
+      usuario.perfil,
+      this.parsePermissoes(usuario.permissoes),
+    );
 
     const payload = {
       sub: usuario.id.toString(),
@@ -59,6 +66,7 @@ export class AuthService {
     };
 
     const accessToken = await this.jwtService.signAsync(payload);
+    await this.authUsuarioRepository.registrarAcesso(usuario.id);
     const expiresIn = this.configService.get<string>("JWT_EXPIRES_IN") ?? "1h";
 
     return {
@@ -67,7 +75,9 @@ export class AuthService {
       expiresIn,
       usuario: {
         id: payload.sub,
+        nome: usuario.name,
         email: payload.email,
+        perfil: usuario.perfil,
         permissoes,
       },
     };
