@@ -5,7 +5,7 @@ export const LOTE_REPOSITORY = Symbol("LOTE_REPOSITORY");
 export interface LoteRepository {
     create(lote: Lote): Promise<void>;
     update(lote: Lote): Promise<void>;
-    delete(id: bigint): Promise<boolean>;
+    delete(id: bigint): Promise<void>;
     findAll(): Promise<Lote[]>;
     findById(id: bigint): Promise<Lote | null>;
     findByMatricula(matricula: string): Promise<Lote | null>;
