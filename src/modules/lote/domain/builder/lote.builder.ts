@@ -13,8 +13,9 @@ export class LoteBuilder {
     }
 
     // builders
-    withMatricula(matricula: string): LoteBuilder {
-        this.lote.matricula = matricula;
+    withMatricula(matricula: string | null | undefined): LoteBuilder {
+        if (matricula === null || matricula === undefined) return this;
+        this.lote.matricula = matricula!;
         return this;
     }
     withNumeroLote(numeroLote: number): LoteBuilder {
@@ -37,8 +38,9 @@ export class LoteBuilder {
         this.lote.estado = estado;
         return this;
     }
-    withInformacoesComplementares(informacoesComplementares: string): LoteBuilder {
-        this.lote.informacoesComplementares = informacoesComplementares;
+    withInformacoesComplementares(informacoesComplementares: string | null | undefined): LoteBuilder {
+        if (informacoesComplementares === null || informacoesComplementares === undefined) return this;
+        this.lote.informacoesComplementares = informacoesComplementares!;
         return this;
     }
     withLatitude(latitude: number): LoteBuilder {
@@ -61,8 +63,9 @@ export class LoteBuilder {
         this.lote.idLogradouro = idLogradouro;
         return this;
     }
-    withIdAnexo(idAnexo: bigint): LoteBuilder {
-        this.lote.idAnexo = idAnexo;
+    withIdAnexo(idAnexo: bigint | null | undefined): LoteBuilder {
+        if (!idAnexo) return this;
+        this.lote.idAnexo = idAnexo!;
         return this;
     }
     withCreatedAt(createdAt: Date): LoteBuilder {
