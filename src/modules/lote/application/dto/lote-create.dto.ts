@@ -11,7 +11,7 @@ import {
   IsDate,
 } from "class-validator";
 
-export class CreateLoteDtio {
+export class CreateLoteDto {
     @ApiProperty()
     @IsOptional()
     @IsString()
