@@ -1,17 +1,17 @@
 export class ResponseLoteDto {
     id!: string;
-    matricula!: string;
+    matricula?: string;
     tipo!: string;
     areaQuadrada!: number;
     valor!: number;
     estado!: string;
-    informacoesComplementares!: string;
+    informacoesComplementares?: string;
     latitude!: number;
     longitude!: number;
     publicado!: boolean;
     idQuadra!: string;
     idLogradouro!: string;
-    idAnexo!: string;
+    idAnexo?: string;
     createdAt!: string;
-    UpdatedAt!: string;
+    updatedAt!: string;
 }
