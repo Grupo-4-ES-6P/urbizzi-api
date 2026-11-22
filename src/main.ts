@@ -3,11 +3,16 @@ import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { runMigrations } from "@shared/infra/database/run-migrations";
 import { AppModule } from "./app.module";
 
 async function bootstrap() {
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET não definido.");
+  }
+
+  if (process.env.RUN_MIGRATIONS === "true") {
+    await runMigrations();
   }
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
