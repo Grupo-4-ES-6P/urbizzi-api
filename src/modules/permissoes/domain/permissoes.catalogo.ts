@@ -56,6 +56,7 @@ export const PERMISSOES_BASE: string[] = [
   Permission.CLIENTE_ATUALIZAR,
   Permission.CLIENTE_DESATIVAR,
   Permission.CLIENTE_REATIVAR,
+  Permission.CLIENTE_EXCLUIR,
   Permission.QUADRA_READ,
   Permission.ANEXO_VISUALIZAR,
   Permission.ANEXO_CRIAR,

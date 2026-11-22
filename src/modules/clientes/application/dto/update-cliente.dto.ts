@@ -5,9 +5,14 @@ import {
   IsString,
   MaxLength,
 } from "class-validator";
+import { Transform } from "class-transformer";
 import { TipoDocumentoCliente } from "../../domain/models/cliente.entity";
+import { ClienteComplementoDto } from "./cliente-complemento.dto";
 
-export class UpdateClienteDto {
+const vazioParaNull = ({ value }: { value: unknown }) =>
+  value === "" ? null : value;
+
+export class UpdateClienteDto extends ClienteComplementoDto {
   @IsOptional()
   @IsEnum(TipoDocumentoCliente)
   tipoDocumento?: TipoDocumentoCliente;
@@ -33,14 +38,16 @@ export class UpdateClienteDto {
   nomeFantasia?: string;
 
   @IsOptional()
+  @Transform(vazioParaNull)
   @IsString()
   @MaxLength(20)
-  telefone?: string;
+  telefone?: string | null;
 
   @IsOptional()
+  @Transform(vazioParaNull)
   @IsEmail()
   @MaxLength(256)
-  email?: string;
+  email?: string | null;
 
   @IsOptional()
   @IsString()
