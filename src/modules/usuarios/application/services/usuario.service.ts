@@ -151,7 +151,7 @@ export class UsuarioService {
       email: user.email,
       status: user.status,
       permissions: user.permissions,
-      anexoId: user.anexoId.toString(),
+      anexoId: user.anexoId?.toString() ?? null,
     };
   }
 

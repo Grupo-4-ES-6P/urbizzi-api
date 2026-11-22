@@ -1,6 +1,7 @@
 import { anexoSchema } from "@modules/anexo/infra/schemas/anexo.schema";
 
 import {
+  bigint,
   bigserial,
   pgEnum,
   pgTable,
@@ -22,7 +23,7 @@ export const usuariosSchema = pgTable("usuarios", {
   password: text("password").notNull(),
   permissions: text("permissions").array().notNull(),
   status: statusUsuarioEnum("status").notNull().default("PENDENTE_ATIVACAO"),
-  anexoId: bigserial("anexo_id", { mode: "bigint" }).references(() => anexoSchema.idAnexo), // FK opcional
+  anexoId: bigint("anexo_id", { mode: "bigint" }).references(() => anexoSchema.idAnexo), // FK opcional
   createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
 });
