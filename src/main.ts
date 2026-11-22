@@ -6,6 +6,10 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 
 async function bootstrap() {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET não definido.");
+  }
+
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.enableCors({
