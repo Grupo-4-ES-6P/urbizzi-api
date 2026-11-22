@@ -16,19 +16,19 @@ export class DrizzleLoteRepository implements LoteRepository {
             .insert(loteSchema)
             .values({
                 matricula: lote.matricula,
-                tipo: lote.tipo,
-                areaQuadrada: lote.areaQuadrada,
-                valor: lote.valor,
-                estado: lote.estado,
+                tipo: lote.tipo!,
+                areaQuadrada: lote.areaQuadrada!,
+                valor: lote.valor!,
+                estado: lote.estado!,
                 informacoesComplementares: lote.informacoesComplementares,
-                latitude: lote.latitude,
-                longitude: lote.longitude,
-                publicado: lote.publicado,
+                latitude: lote.latitude!,
+                longitude: lote.longitude!,
+                publicado: lote.publicado!,
                 idQuadra: lote.idQuadra,
                 idLogradouro: lote.idLogradouro,
                 idAnexo: lote.idAnexo,
-                createdAt: lote.createdAt,
-                updatedAt: lote.updatedAt,
+                createdAt: lote.createdAt ?? new Date(),
+                updatedAt: lote.updatedAt ?? new Date(),
             });
     }
 
