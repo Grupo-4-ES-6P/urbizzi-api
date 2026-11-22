@@ -1,10 +1,35 @@
-import { boolean, integer, pgTable, serial, text } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  date,
+  doublePrecision,
+  integer,
+  pgTable,
+  serial,
+  text,
+  varchar,
+} from "drizzle-orm/pg-core";
 
 export const loteamentoSchema = pgTable("loteamento", {
   idLoteamento: serial("id_loteamento").primaryKey(),
   nome: text("nome").notNull(),
-  descricao: text("descricao").notNull(),
+  descricao: text("descricao").notNull().default(""),
   situacao: text("situacao").notNull(),
   publicado: boolean("publicado").notNull(),
-  idBairro: integer("id_bairro").notNull(),
+  idBairro: integer("id_bairro"),
+  codigo: varchar("codigo", { length: 20 }),
+  dataAprovacao: date("data_aprovacao", { mode: "string" }),
+  cep: varchar("cep", { length: 8 }),
+  endereco: varchar("endereco", { length: 256 }),
+  bairro: varchar("bairro", { length: 120 }),
+  cidade: varchar("cidade", { length: 120 }),
+  uf: varchar("uf", { length: 2 }),
+  matriculaMae: varchar("matricula_mae", { length: 60 }),
+  areaTotal: doublePrecision("area_total"),
+  areaLoteavel: doublePrecision("area_loteavel"),
+  latitude: doublePrecision("latitude"),
+  longitude: doublePrecision("longitude"),
+  cartorio: varchar("cartorio", { length: 160 }),
+  numeroRegistro: varchar("numero_registro", { length: 60 }),
+  licencaAmbiental: varchar("licenca_ambiental", { length: 60 }),
+  validadeLicenca: date("validade_licenca", { mode: "string" }),
 });
