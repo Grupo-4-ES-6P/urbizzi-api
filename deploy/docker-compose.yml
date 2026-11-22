@@ -1,0 +1,52 @@
+name: urbizzi
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: urbizzi
+      POSTGRES_USER: urbizzi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U urbizzi -d urbizzi"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    image: ghcr.io/grupo-4-es-6p/urbizzi-api:${URBIZZI_TAG:-latest}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgres://urbizzi:${POSTGRES_PASSWORD}@db:5432/urbizzi
+      JWT_SECRET: ${JWT_SECRET:?defina JWT_SECRET no .env}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
+      RUN_MIGRATIONS: "true"
+      ADMIN_NAME: ${ADMIN_NAME:-Administrador}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?defina ADMIN_EMAIL no .env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?defina ADMIN_PASSWORD no .env}
+    volumes:
+      - uploads:/app/uploads
+    ports:
+      - "${API_PORT:-3001}:3001"
+
+  web:
+    image: ghcr.io/grupo-4-es-6p/urbizzi-web:${URBIZZI_TAG:-latest}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      API_UPSTREAM: http://api:3001
+    ports:
+      - "${WEB_PORT:-8080}:80"
+
+volumes:
+  db-data:
+  uploads:
