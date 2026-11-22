@@ -3,6 +3,7 @@ import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { PostgresExceptionFilter } from "@shared/infra/database/postgres-exception.filter";
 import { runMigrations } from "@shared/infra/database/run-migrations";
 import { AppModule } from "./app.module";
 
@@ -25,6 +26,8 @@ async function bootstrap() {
   app.useStaticAssets(join(process.cwd(), "uploads"), {
     prefix: "/uploads/",
   });
+
+  app.useGlobalFilters(new PostgresExceptionFilter(app.getHttpAdapter()));
 
   app.useGlobalPipes(
     new ValidationPipe({

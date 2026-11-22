@@ -12,11 +12,16 @@ export enum Permission {
   ADMIN_DELETE = "admin:delete",
 
   // quadra
-
   QUADRA_WRITE = "quadra:write",
   QUADRA_READ = "quadra:read",
   QUADRA_UPDATE = "quadra:update",
   QUADRA_DELETE = "quadra:delete",
+
+  // lote
+  LOTE_WRITE = "lote:write",
+  LOTE_READ = "lote:read",
+  LOTE_UPDATE = "lote:update",
+  LOTE_DELETE = "lote:delete",
 
   CLIENTE_CRIAR = "CLIENTE_CRIAR",
   CLIENTE_VISUALIZAR = "CLIENTE_VISUALIZAR",

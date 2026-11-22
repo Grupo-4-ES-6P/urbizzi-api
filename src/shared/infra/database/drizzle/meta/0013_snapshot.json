@@ -1,5 +1,5 @@
 {
-  "id": "1ec5852f-cdf4-45ac-9759-e64bea79227b",
+  "id": "39e54484-60fb-49b4-a1cc-f46ed1a60bc7",
   "prevId": "bdcb7800-4256-4b25-93c6-3d5c8bdda7af",
   "version": "7",
   "dialect": "postgresql",
@@ -231,6 +231,164 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.lote": {
+      "name": "lote",
+      "schema": "",
+      "columns": {
+        "id_lote": {
+          "name": "id_lote",
+          "type": "bigserial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "matricula": {
+          "name": "matricula",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "area_quadrada": {
+          "name": "area_quadrada",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "valor": {
+          "name": "valor",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "informacoes_complementares": {
+          "name": "informacoes_complementares",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "publicado": {
+          "name": "publicado",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_quadra": {
+          "name": "id_quadra",
+          "type": "bigserial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_logradouro": {
+          "name": "id_logradouro",
+          "type": "bigserial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_anexo": {
+          "name": "id_anexo",
+          "type": "bigserial",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "lote_id_quadra_quadras_id_quadra_fk": {
+          "name": "lote_id_quadra_quadras_id_quadra_fk",
+          "tableFrom": "lote",
+          "tableTo": "quadras",
+          "columnsFrom": [
+            "id_quadra"
+          ],
+          "columnsTo": [
+            "id_quadra"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "lote_id_logradouro_logradouro_id_logradouro_fk": {
+          "name": "lote_id_logradouro_logradouro_id_logradouro_fk",
+          "tableFrom": "lote",
+          "tableTo": "logradouro",
+          "columnsFrom": [
+            "id_logradouro"
+          ],
+          "columnsTo": [
+            "id_logradouro"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "lote_id_anexo_anexo_id_anexo_fk": {
+          "name": "lote_id_anexo_anexo_id_anexo_fk",
+          "tableFrom": "lote",
+          "tableTo": "anexo",
+          "columnsFrom": [
+            "id_anexo"
+          ],
+          "columnsTo": [
+            "id_anexo"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "lote_id_lote_unique": {
+          "name": "lote_id_lote_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id_lote"
+          ]
+        },
+        "lote_matricula_unique": {
+          "name": "lote_matricula_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "matricula"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -492,7 +650,7 @@
         },
         "anexo_id": {
           "name": "anexo_id",
-          "type": "bigint",
+          "type": "bigserial",
           "primaryKey": false,
           "notNull": false
         },

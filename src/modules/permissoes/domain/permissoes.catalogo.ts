@@ -58,6 +58,7 @@ export const PERMISSOES_BASE: string[] = [
   Permission.CLIENTE_REATIVAR,
   Permission.CLIENTE_EXCLUIR,
   Permission.QUADRA_READ,
+  Permission.LOTE_READ,
   Permission.ANEXO_VISUALIZAR,
   Permission.ANEXO_CRIAR,
 ];
@@ -68,6 +69,9 @@ export const PERMISSOES_DE_ENDPOINT: Partial<Record<PermissaoSistema, string[]>>
     Permission.QUADRA_WRITE,
     Permission.QUADRA_UPDATE,
     Permission.QUADRA_DELETE,
+    Permission.LOTE_WRITE,
+    Permission.LOTE_UPDATE,
+    Permission.LOTE_DELETE,
     Permission.ANEXO_ATUALIZAR,
     Permission.ANEXO_EXCLUIR,
   ],

@@ -5,6 +5,8 @@ import { loteamentoSchema } from "@modules/loteamento/infra/schemas/loteamento.s
 import { usuariosSchema } from "@modules/usuarios/infra/schemas/usuario.schema";
 import { clienteSchema } from "@modules/clientes/infra/schemas/cliente.schema";
 import { propostaSchema } from "@modules/proposta/infra/schemas/proposta.schema";
+import { quadraSchema } from "@modules/quadra/infra/schemas/quadra.schema";
+import { loteSchema } from "@modules/lote/infra/schemas/lote.schema";
 import { Injectable, type OnModuleDestroy } from "@nestjs/common";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
@@ -17,6 +19,8 @@ const schema = {
   bairroSchema,
   clienteSchema,
   propostaSchema,
+  quadraSchema,
+  loteSchema,
 };
 
 @Injectable()

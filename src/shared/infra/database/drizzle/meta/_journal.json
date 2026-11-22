@@ -96,36 +96,15 @@
     {
       "idx": 13,
       "version": "7",
-      "when": 1795333589401,
-      "tag": "0013_usuario_anexo_opcional",
+      "when": 1795321303838,
+      "tag": "0013_bright_lyja",
       "breakpoints": true
     },
     {
       "idx": 14,
       "version": "7",
-      "when": 1795334614563,
-      "tag": "0014_perfis_e_permissoes",
-      "breakpoints": true
-    },
-    {
-      "idx": 15,
-      "version": "7",
-      "when": 1795335531624,
-      "tag": "0015_clientes_completo",
-      "breakpoints": true
-    },
-    {
-      "idx": 16,
-      "version": "7",
-      "when": 1795336210743,
-      "tag": "0016_loteamento_completo",
-      "breakpoints": true
-    },
-    {
-      "idx": 17,
-      "version": "7",
-      "when": 1795336618690,
-      "tag": "0017_quadras_por_loteamento",
+      "when": 1795363287290,
+      "tag": "0014_integracao_front",
       "breakpoints": true
     }
   ]
