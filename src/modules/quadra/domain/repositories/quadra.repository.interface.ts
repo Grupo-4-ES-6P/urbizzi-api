@@ -3,11 +3,11 @@ import type { Quadra } from "../models/quadra.entity";
 export const QUADRA_REPOSITORY = Symbol("QUADRA_REPOSITORY");
 
 export interface QuadraRepository {
-    create(quadra: Quadra): Promise<void>;
-    update(quadra: Quadra): Promise<void>;
+    create(quadra: Quadra): Promise<Quadra>;
+    update(quadra: Quadra): Promise<Quadra | null>;
     delete(id: bigint): Promise<void>;
-    findAll(): Promise<Quadra[]>;
+    findAll(filtro?: { idLoteamento?: bigint }): Promise<Quadra[]>;
     findById(id: bigint): Promise<Quadra | null>;
-    findByIdentificacao(identificacao: string): Promise<Quadra | null>;
-    findByLoteamento(idLoteamento: bigint): Promise<Quadra[]>;
+    findByIdentificacao(idLoteamento: bigint, identificacao: string): Promise<Quadra | null>;
+    loteamentoExiste(idLoteamento: bigint): Promise<boolean>;
 }

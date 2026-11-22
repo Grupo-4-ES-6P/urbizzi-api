@@ -120,6 +120,13 @@
       "when": 1795336210743,
       "tag": "0016_loteamento_completo",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1795336618690,
+      "tag": "0017_quadras_por_loteamento",
+      "breakpoints": true
     }
   ]
 }

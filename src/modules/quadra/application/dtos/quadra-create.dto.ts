@@ -1,12 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
 import {
-    IsNumber,
+    IsInt,
     IsNotEmpty,
+    IsNumber,
+    IsOptional,
     IsString,
     MaxLength,
+    Min,
 } from "class-validator";
 
-export class CreateQuadraDto{
+export class CreateQuadraDto {
     @ApiProperty()
     @IsString()
     @IsNotEmpty()
@@ -14,6 +17,19 @@ export class CreateQuadraDto{
     identificacao!: string;
 
     @ApiProperty()
+    @IsInt()
+    @Min(1)
+    idLoteamento!: number;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
     @IsNumber()
-    idLoteamento!: bigint;
+    @Min(0)
+    area?: number | null;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsString()
+    @MaxLength(120)
+    testadaPara?: string | null;
 }
