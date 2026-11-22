@@ -17,7 +17,6 @@ import { CreateAnexoDto } from "../../application/dto/create-anexo.dto";
 import { UpdateAnexoDto } from "../../application/dto/update-anexo.dto";
 import { AnexoService } from "../../application/services/anexo.service";
 import type { AnexoEntity } from "../../domain/models/anexo.entity";
-import { Public } from "@shared/decorators/public.decorator";
 
 interface AnexoResponse {
   idAnexo: number;
@@ -31,7 +30,7 @@ interface AnexoResponse {
 export class AnexoController {
   constructor(private readonly service: AnexoService) {}
 
-  @Public()
+  @Permissoes(Permission.ANEXO_CRIAR)
   @Post()
   async save(@Body() body: CreateAnexoDto): Promise<AnexoResponse> {
     return this.toResponse(await this.service.save(body));
