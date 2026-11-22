@@ -25,6 +25,29 @@ export class UsuarioSeedService implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
+    await this.promoverAdministradoresAntigos();
+    await this.criarAdministradorInicial();
+  }
+
+  /** Usuários criados antes dos perfis com a permissão ADMIN viram Administrador. */
+  private async promoverAdministradoresAntigos(): Promise<void> {
+    try {
+      const antigos = (await this.userRepository.findAll()).filter(
+        (u) =>
+          u.permissions.includes("ADMIN") && u.perfil !== Perfil.ADMINISTRADOR,
+      );
+      for (const usuario of antigos) {
+        await this.usuarioService.update(usuario.id.toString(), {
+          perfil: Perfil.ADMINISTRADOR,
+        });
+        this.logger.log(`Perfil Administrador atribuído a ${usuario.email}`);
+      }
+    } catch (error) {
+      this.logger.error("Falha ao atualizar administradores antigos.", error);
+    }
+  }
+
+  private async criarAdministradorInicial(): Promise<void> {
     const email = this.configService.get<string>("ADMIN_EMAIL")?.trim().toLowerCase();
     const password = this.configService.get<string>("ADMIN_PASSWORD");
 

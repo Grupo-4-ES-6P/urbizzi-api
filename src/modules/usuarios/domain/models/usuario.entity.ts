@@ -74,13 +74,13 @@ export class Usuario {
 
   //setters
   set id(id: bigint) {
-    if (this._id != undefined) {
+    if (this._id !== undefined) {
       throw "id alredy defined lmao";
     } 
     this._id = id;
   }
-  set name(name: String) {
-    this._name = name.toString();
+  set name(name: string) {
+    this._name = name;
   }
   set email(email: string) {
     this._email = email;
