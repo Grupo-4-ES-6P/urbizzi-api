@@ -65,6 +65,6 @@ export class QuadraController {
     @Permissoes(Permission.QUADRA_DELETE)
     @Delete(":id")
     async delete(@Param("id") id: string): Promise<Boolean> {
-        return await this.delete(id);
+        return await this.service.delete(id);
     }
 }

@@ -13,6 +13,7 @@ import { LoteamentoModule } from "./modules/loteamento/loteamento.module";
 import { PropostaModule } from "./modules/proposta/proposta.module";
 import { UsuariosModule } from "./modules/usuarios/usuarios.module";
 import { QuadraModule } from "@modules/quadra/quadra.module";
+import { LoteModule } from "@modules/lote/lote.module";
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { QuadraModule } from "@modules/quadra/quadra.module";
     LogradouroModule,
     BairroModule,
     ClientesModule,
-    QuadraModule
+    QuadraModule,
+    LoteModule,
   ],
   controllers: [AppController],
   providers: [AppService],
