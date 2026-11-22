@@ -1,12 +1,12 @@
 export interface LoteProps {
     id?: bigint;
-    matricula?: string;
+    matricula?: string | null;
     numeroLote?: number;
     tipo?: string;
     areaQuadrada?: number;
     valor?: number;
     estado?: string;
-    informacoesComplementares?: string;
+    informacoesComplementares?: string | null;
     latitude?: number;
     longitude?: number;
     publicado?: boolean;
