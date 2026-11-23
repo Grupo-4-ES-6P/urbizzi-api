@@ -11,6 +11,7 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
+import { NotificacaoService } from "@modules/notificacoes/application/notificacao.service";
 import { Permissoes } from "@shared/decorators/permissoes.decorator";
 import { PermissoesGuard } from "@shared/guards/permissoes.guard";
 import {
@@ -56,7 +57,10 @@ function exigirAprovacao(status: string | undefined, usuario?: RequestAuthUser) 
 @UseGuards(JwtAuthGuard, PermissoesGuard)
 @Controller("propostas")
 export class PropostaController {
-  constructor(private readonly service: PropostaService) {}
+  constructor(
+    private readonly service: PropostaService,
+    private readonly notificacoes: NotificacaoService,
+  ) {}
 
   @Permissoes("CRIAR_PROPOSTA")
   @Post()
@@ -65,7 +69,9 @@ export class PropostaController {
     @Req() request: Request & { user: RequestAuthUser },
   ): Promise<PropostaResponse> {
     exigirAprovacao(body.status, request.user);
-    return this.toResponse(await this.service.save(body, request.user.sub));
+    const proposta = await this.service.save(body, request.user.sub);
+    await this.avisar(null, proposta, request.user.sub);
+    return this.toResponse(proposta);
   }
 
   @Get()
@@ -87,7 +93,10 @@ export class PropostaController {
     @Req() request?: Request & { user: RequestAuthUser },
   ): Promise<PropostaResponse> {
     exigirAprovacao(body.status, request?.user);
-    return this.toResponse(await this.service.updateById(id, body));
+    const anterior = body.status || body.valor ? await this.service.findById(id) : null;
+    const proposta = await this.service.updateById(id, body);
+    if (anterior) await this.avisar(anterior, proposta, request?.user.sub);
+    return this.toResponse(proposta);
   }
 
   @Permissoes("CRIAR_PROPOSTA")
@@ -95,6 +104,39 @@ export class PropostaController {
   @Delete(":id")
   async remove(@Param("id") id: string): Promise<void> {
     await this.service.removeById(id);
+  }
+
+  private async avisar(anterior: PropostaEntity | null, atual: PropostaEntity, autorDoAto?: string) {
+    const nome = atual.codigo ?? `#${atual.idProposta}`;
+    const link = `/propostas/${atual.idProposta}`;
+    const novaVersao = !anterior || anterior.status !== atual.status || anterior.valor !== atual.valor;
+
+    if (atual.status === "pendente" && novaVersao) {
+      const valor = Number(atual.valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+      await this.notificacoes.notificar(
+        {
+          tipo: "proposta_pendente",
+          titulo: "Proposta aguardando análise",
+          mensagem: `A proposta ${nome}, de ${valor}, precisa de aprovação.`,
+          link,
+          chave: `proposta-pendente:${atual.idProposta}:${atual.versao}`,
+        },
+        { permissao: "APROVAR_PROPOSTA", exceto: autorDoAto },
+      );
+    }
+
+    if (STATUS_DE_DECISAO.includes(atual.status) && anterior?.status !== atual.status) {
+      await this.notificacoes.notificar(
+        {
+          tipo: `proposta_${atual.status}`,
+          titulo: atual.status === "aprovada" ? "Proposta aprovada" : "Proposta recusada",
+          mensagem: `Sua proposta ${nome} foi ${atual.status}.`,
+          link,
+          chave: `proposta-${atual.status}:${atual.idProposta}`,
+        },
+        { usuarios: [atual.idUsuario], exceto: autorDoAto },
+      );
+    }
   }
 
   private toResponse(proposta: PropostaEntity): PropostaResponse {

@@ -1,4 +1,5 @@
 import { loteSchema } from "@modules/lote/infra/schemas/lote.schema";
+import { NotificacaoService } from "@modules/notificacoes/application/notificacao.service";
 import { loteamentoSchema } from "@modules/loteamento/infra/schemas/loteamento.schema";
 import { BadRequestException, Body, Controller, Get, Inject, Post, UseGuards } from "@nestjs/common";
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
@@ -27,6 +28,7 @@ export class PublicoController {
     private readonly drizzle: DrizzleService,
     @Inject(INTERESSES) private readonly interesses: RegistroService,
     @Inject(HISTORICO) private readonly historico: RegistroService,
+    private readonly notificacoes: NotificacaoService,
   ) {}
 
   @Get("catalogo")
@@ -74,7 +76,7 @@ export class PublicoController {
   @Post("interesses")
   async registrarInteresse(@Body() body: InteressePublicoDto) {
     const [lote] = await this.drizzle.db
-      .select({ id: loteSchema.id })
+      .select({ id: loteSchema.id, matricula: loteSchema.matricula })
       .from(loteSchema)
       .where(and(eq(loteSchema.id, BigInt(body.idLote)), eq(loteSchema.publicado, true)))
       .limit(1);
@@ -107,6 +109,16 @@ export class PublicoController {
         situacao: { rotulo: "Disponível", variante: "normal" },
       },
     });
+    await this.notificacoes.notificar(
+      {
+        tipo: "interesse",
+        titulo: "Novo interesse pelo site",
+        mensagem: `${body.nome.trim()} quer saber mais sobre o imóvel ${lote.matricula ?? `#${body.idLote}`}.`,
+        link: `/imoveis/${body.idLote}/historico`,
+        chave: `interesse:${criado.id}`,
+      },
+      { permissao: "CRIAR_PROPOSTA" },
+    );
     return { id: criado.id, codigo: criado.codigo };
   }
 }

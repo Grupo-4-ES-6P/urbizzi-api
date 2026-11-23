@@ -1,3 +1,4 @@
+import { NotificacoesModule } from "@modules/notificacoes/notificacoes.module";
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { JwtAuthGuard } from "@shared/guards/jwt-auth.guard";
@@ -10,7 +11,7 @@ import { criarRegistroController } from "./infra/controllers/registro.controller
 import { REGISTROS } from "./registros.config";
 
 @Module({
-  imports: [SharedModule, JwtModule.register({})],
+  imports: [SharedModule, NotificacoesModule, JwtModule.register({})],
   controllers: [...REGISTROS.map(criarRegistroController), PublicoController],
   providers: [
     JwtAuthGuard,

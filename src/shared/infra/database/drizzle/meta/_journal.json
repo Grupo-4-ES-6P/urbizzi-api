@@ -134,6 +134,13 @@
       "when": 1795402616087,
       "tag": "0018_trocar_senha",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1795404918645,
+      "tag": "0019_notificacoes",
+      "breakpoints": true
     }
   ]
 }

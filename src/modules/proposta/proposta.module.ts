@@ -1,3 +1,4 @@
+import { NotificacoesModule } from "@modules/notificacoes/notificacoes.module";
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { JwtAuthGuard } from "@shared/guards/jwt-auth.guard";
@@ -9,7 +10,7 @@ import { PropostaController } from "./infra/controllers/proposta.controller";
 import { DrizzlePropostaRepository } from "./infra/repositories/drizzle-proposta.repository";
 
 @Module({
-  imports: [SharedModule, JwtModule.register({})],
+  imports: [SharedModule, NotificacoesModule, JwtModule.register({})],
   controllers: [PropostaController],
   providers: [
     PropostaService,

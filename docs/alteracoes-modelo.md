@@ -108,4 +108,10 @@ a senha dele; volta a `false` quando a própria pessoa troca ou redefine. O link
 `POST /anexos/upload` grava o arquivo em `uploads/` e cria a linha em `anexo` (`tipo_arquivo`, `caminho_arquivo`).
 Fotos e documentos guardam a URL `/uploads/...` em `lote.detalhes` / `documento_imovel.detalhes`.
 
-Dashboard (incluindo os alertas de reserva vencendo e proposta pendente) e relatórios são calculados a partir desses dados; não têm tabela própria. Ainda não existe tela de notificações.
+## Notificações (migration 0019)
+Tabela `notificacao`: uma linha por destinatário (`id_usuario` → `usuarios`, apaga junto), `tipo`, `titulo`,
+`mensagem`, `link` (tela do front), `lida_em` e `chave`. O índice único (`id_usuario`, `chave`) impede o mesmo
+aviso duas vezes. Eventos: interesse pelo site (quem cria proposta), proposta pendente (quem aprova), proposta
+aprovada/recusada (o autor) e reserva vencendo em 48 h (quem registra reserva).
+
+Dashboard (incluindo os alertas de reserva vencendo e proposta pendente) e relatórios são calculados a partir desses dados; não têm tabela própria.

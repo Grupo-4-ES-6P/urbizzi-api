@@ -17,6 +17,7 @@ import { RegistrosModule } from "./modules/registros/registros.module";
 import { UsuariosModule } from "./modules/usuarios/usuarios.module";
 import { QuadraModule } from "@modules/quadra/quadra.module";
 import { LoteModule } from "@modules/lote/lote.module";
+import { NotificacoesModule } from "@modules/notificacoes/notificacoes.module";
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { LoteModule } from "@modules/lote/lote.module";
     PermissoesModule,
     PropostaModule,
     RegistrosModule,
+    NotificacoesModule,
     UsuariosModule,
     LogradouroModule,
     BairroModule,
