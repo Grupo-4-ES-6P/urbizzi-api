@@ -6,7 +6,7 @@ export interface UsuarioAuthEntityProps {
   email: string;
   senhaHash: string;
   anexoId: bigint | null;
-  permissoes: string[];
+  permissoes: string[] | null;
   status: string;
   perfil?: Perfil;
   trocarSenha?: boolean;
