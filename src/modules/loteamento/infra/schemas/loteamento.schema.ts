@@ -1,3 +1,4 @@
+import { bairroSchema } from "@modules/bairro/infra/schemas/bairro.schema";
 import {
   boolean,
   date,
@@ -15,7 +16,7 @@ export const loteamentoSchema = pgTable("loteamento", {
   descricao: text("descricao").notNull().default(""),
   situacao: text("situacao").notNull(),
   publicado: boolean("publicado").notNull(),
-  idBairro: integer("id_bairro"),
+  idBairro: integer("id_bairro").references(() => bairroSchema.idBairro),
   codigo: varchar("codigo", { length: 20 }),
   dataAprovacao: date("data_aprovacao", { mode: "string" }),
   cep: varchar("cep", { length: 8 }),

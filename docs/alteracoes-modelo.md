@@ -92,4 +92,11 @@ Mesmo formato nas cinco (migration 0016):
 
 As FKs impedem excluir imóvel ou cliente que tenha reserva, venda ou histórico (RF32).
 
+## Chaves estrangeiras que faltavam (migration 0017)
+`bairro.id_cidade` → `cidade`, `logradouro.id_cidade` → `cidade`, `loteamento.id_bairro` → `bairro`,
+`proposta.id_lote` → `lote`, `proposta.id_cliente` → `cliente`, `proposta.id_usuario` → `usuarios`.
+
+Criadas como `NOT VALID`: barram dado novo inválido sem rejeitar o que já existe. Depois de corrigir o legado,
+rode `ALTER TABLE <tabela> VALIDATE CONSTRAINT <nome>` para valer também para ele.
+
 Notificações, dashboard e relatórios são calculados a partir desses dados; não têm tabela própria.

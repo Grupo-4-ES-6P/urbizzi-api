@@ -1,3 +1,6 @@
+import { clienteSchema } from "@modules/clientes/infra/schemas/cliente.schema";
+import { loteSchema } from "@modules/lote/infra/schemas/lote.schema";
+import { usuariosSchema } from "@modules/usuarios/infra/schemas/usuario.schema";
 import {
   integer,
   jsonb,
@@ -25,7 +28,13 @@ export const propostaSchema = pgTable("proposta", {
     .defaultNow(),
   dataVenda: timestamp("data_venda", { withTimezone: true }),
   dataCancelamento: timestamp("data_cancelamento", { withTimezone: true }),
-  idLote: integer("id_lote").notNull(),
-  idUsuario: integer("id_usuario").notNull(),
-  idCliente: integer("id_cliente").notNull(),
+  idLote: integer("id_lote")
+    .notNull()
+    .references(() => loteSchema.id),
+  idUsuario: integer("id_usuario")
+    .notNull()
+    .references(() => usuariosSchema.id),
+  idCliente: integer("id_cliente")
+    .notNull()
+    .references(() => clienteSchema.id),
 });
