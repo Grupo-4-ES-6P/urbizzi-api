@@ -75,6 +75,10 @@ export const PERMISSOES_DE_ENDPOINT: Partial<Record<PermissaoSistema, string[]>>
     Permission.ANEXO_ATUALIZAR,
     Permission.ANEXO_EXCLUIR,
   ],
+  // Essas ações mudam a situação do imóvel
+  REGISTRAR_RESERVA: [Permission.LOTE_UPDATE],
+  CRIAR_PROPOSTA: [Permission.LOTE_UPDATE],
+  REGISTRAR_VENDA: [Permission.LOTE_UPDATE],
   GERENCIAR_USUARIOS: [
     Permission.USER_READ,
     Permission.USER_WRITE,

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Delete,
   Get,
   HttpCode,
@@ -10,6 +11,8 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
+import { Permissoes } from "@shared/decorators/permissoes.decorator";
+import { PermissoesGuard } from "@shared/guards/permissoes.guard";
 import {
   JwtAuthGuard,
   type RequestAuthUser,
@@ -22,6 +25,8 @@ import type { PropostaEntity } from "../../domain/models/proposta.entity";
 
 interface PropostaResponse {
   idProposta: number;
+  codigo: string | null;
+  detalhes: Record<string, unknown>;
   valor: string;
   condicoes: string;
   observacoes: string | null;
@@ -37,16 +42,29 @@ interface PropostaResponse {
   idCliente: number;
 }
 
-@UseGuards(JwtAuthGuard)
+const STATUS_DE_DECISAO = ["aprovada", "recusada"];
+
+/** Aprovar ou recusar exige a permissão da matriz. */
+function exigirAprovacao(status: string | undefined, usuario?: RequestAuthUser) {
+  if (!usuario || !status || !STATUS_DE_DECISAO.includes(status)) return;
+  const permissoes = usuario.permissoes ?? [];
+  if (!permissoes.includes("ADMIN") && !permissoes.includes("APROVAR_PROPOSTA")) {
+    throw new ForbiddenException("Você não pode aprovar ou recusar propostas.");
+  }
+}
+
+@UseGuards(JwtAuthGuard, PermissoesGuard)
 @Controller("propostas")
 export class PropostaController {
   constructor(private readonly service: PropostaService) {}
 
+  @Permissoes("CRIAR_PROPOSTA")
   @Post()
   async save(
     @Body() body: CreatePropostaDto,
     @Req() request: Request & { user: RequestAuthUser },
   ): Promise<PropostaResponse> {
+    exigirAprovacao(body.status, request.user);
     return this.toResponse(await this.service.save(body, request.user.sub));
   }
 
@@ -61,14 +79,18 @@ export class PropostaController {
     return this.toResponse(await this.service.findById(id));
   }
 
+  @Permissoes("CRIAR_PROPOSTA")
   @Patch(":id")
   async update(
     @Param("id") id: string,
     @Body() body: UpdatePropostaDto,
+    @Req() request?: Request & { user: RequestAuthUser },
   ): Promise<PropostaResponse> {
+    exigirAprovacao(body.status, request?.user);
     return this.toResponse(await this.service.updateById(id, body));
   }
 
+  @Permissoes("CRIAR_PROPOSTA")
   @HttpCode(204)
   @Delete(":id")
   async remove(@Param("id") id: string): Promise<void> {
@@ -78,6 +100,8 @@ export class PropostaController {
   private toResponse(proposta: PropostaEntity): PropostaResponse {
     return {
       idProposta: proposta.idProposta,
+      codigo: proposta.codigo,
+      detalhes: proposta.detalhes,
       valor: proposta.valor,
       condicoes: proposta.condicoes,
       observacoes: proposta.observacoes,

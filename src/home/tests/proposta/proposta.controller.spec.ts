@@ -36,6 +36,8 @@ describe("PropostaController", () => {
     expect(service.save).toHaveBeenCalledWith(body, "3");
     expect(result).toEqual({
       idProposta: 1,
+      codigo: null,
+      detalhes: {},
       valor: "100000",
       condicoes: "À vista",
       observacoes: null,

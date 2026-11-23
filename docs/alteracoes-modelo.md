@@ -70,6 +70,26 @@ Contatos comerciais do cliente (RF12). `id_cliente` → `cliente` com `ON DELETE
 | `id_quadra`, `id_logradouro`, `area_quadrada`, `valor`, `latitude` e `longitude` aceitam nulo (imóvel avulso ou em rascunho) | 0015 |
 | `detalhes` `jsonb`: dados de tela do imóvel (código, título, frente/fundo, valor mínimo, fotos, bloqueio, destaque…) | 0015 |
 
-## Pendente
-Reservas, vendas, documentos, histórico do imóvel, interesses do catálogo público, notificações e relatórios
-ainda não existem na API; o front usa dados de demonstração nessas telas.
+## proposta
+| Mudança | Migration |
+|---|---|
+| `codigo` `varchar(40)` e `detalhes` `jsonb` (versões, entrada, parcelas, anexos…) | 0016 |
+
+## reserva, venda, interesse, historico_imovel, documento_imovel (novas)
+Mesmo formato nas cinco (migration 0016):
+
+| Coluna | Tipo |
+|---|---|
+| `id` | `bigserial` PK |
+| `codigo` | `varchar(40)` |
+| `id_lote` | `bigint` FK → `lote` |
+| `id_cliente` | `bigint` FK → `cliente` |
+| `status` | `varchar(40)` |
+| `data` | `timestamptz` (expiração da reserva, data da venda, data do evento…) |
+| `valor` | `double precision` |
+| `detalhes` | `jsonb` (dados específicos de cada tipo) |
+| `created_at`, `updated_at` | `timestamptz` |
+
+As FKs impedem excluir imóvel ou cliente que tenha reserva, venda ou histórico (RF32).
+
+Notificações, dashboard e relatórios são calculados a partir desses dados; não têm tabela própria.

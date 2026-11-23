@@ -59,6 +59,8 @@ describe("PropostaService", () => {
       idLote: 2,
       idUsuario: 3,
       idCliente: 4,
+      codigo: null,
+      detalhes: {},
     });
   });
 

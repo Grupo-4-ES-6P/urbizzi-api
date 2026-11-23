@@ -7,6 +7,8 @@ import {
   Matches,
   Max,
   Min,
+  IsObject,
+  MaxLength,
 } from "class-validator";
 
 export class CreatePropostaDto {
@@ -43,4 +45,13 @@ export class CreatePropostaDto {
   @Min(1)
   @Max(2147483647)
   idCliente!: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  codigo?: string | null;
+
+  @IsOptional()
+  @IsObject()
+  detalhes?: Record<string, unknown>;
 }

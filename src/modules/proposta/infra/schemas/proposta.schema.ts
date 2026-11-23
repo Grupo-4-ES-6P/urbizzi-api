@@ -1,5 +1,7 @@
 import {
   integer,
+  jsonb,
+  varchar,
   numeric,
   pgTable,
   serial,
@@ -9,6 +11,8 @@ import {
 
 export const propostaSchema = pgTable("proposta", {
   idProposta: serial("id_proposta").primaryKey(),
+  codigo: varchar("codigo", { length: 40 }),
+  detalhes: jsonb("detalhes").$type<Record<string, unknown>>().notNull().default({}),
   valor: numeric("valor").notNull(),
   condicoes: text("condicoes").notNull(),
   observacoes: text("observacoes"),

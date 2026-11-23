@@ -29,6 +29,13 @@ export class UsuarioController {
     return this.userService.findAll();
   }
 
+  /** Nomes e perfis da equipe, para qualquer usuário logado (corretor responsável etc.). */
+  @Get("equipe")
+  async equipe(): Promise<{ id: string; nome: string; perfil: string; ativo: boolean }[]> {
+    const usuarios = await this.userService.findAll();
+    return usuarios.map((u) => ({ id: u.id, nome: u.name, perfil: u.perfil, ativo: u.status === "ATIVO" }));
+  }
+
   @Permissoes(Permission.USER_READ)
   @Get(":id")
   async findById(@Param("id") id: string): Promise<UsuarioResponseDto> {

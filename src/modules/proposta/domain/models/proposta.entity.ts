@@ -1,5 +1,7 @@
 export interface PropostaEntityProps {
   idProposta: number;
+  codigo?: string | null;
+  detalhes?: Record<string, unknown>;
   valor: string;
   condicoes: string;
   observacoes: string | null;
@@ -17,6 +19,8 @@ export interface PropostaEntityProps {
 
 export class PropostaEntity {
   readonly idProposta: number;
+  readonly codigo: string | null;
+  readonly detalhes: Record<string, unknown>;
   readonly valor: string;
   readonly condicoes: string;
   readonly observacoes: string | null;
@@ -46,5 +50,7 @@ export class PropostaEntity {
     this.idLote = props.idLote;
     this.idUsuario = props.idUsuario;
     this.idCliente = props.idCliente;
+    this.codigo = props.codigo ?? null;
+    this.detalhes = props.detalhes ?? {};
   }
 }

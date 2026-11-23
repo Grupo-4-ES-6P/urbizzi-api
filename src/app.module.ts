@@ -12,6 +12,7 @@ import { CidadeModule } from "./modules/cidade/cidade.module";
 import { LoteamentoModule } from "./modules/loteamento/loteamento.module";
 import { PermissoesModule } from "./modules/permissoes/permissoes.module";
 import { PropostaModule } from "./modules/proposta/proposta.module";
+import { RegistrosModule } from "./modules/registros/registros.module";
 import { UsuariosModule } from "./modules/usuarios/usuarios.module";
 import { QuadraModule } from "@modules/quadra/quadra.module";
 import { LoteModule } from "@modules/lote/lote.module";
@@ -28,6 +29,7 @@ import { LoteModule } from "@modules/lote/lote.module";
     LoteamentoModule,
     PermissoesModule,
     PropostaModule,
+    RegistrosModule,
     UsuariosModule,
     LogradouroModule,
     BairroModule,
