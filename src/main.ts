@@ -18,6 +18,9 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // Fotos do imóvel vão no JSON (limite igual ao do Nginx)
+  app.useBodyParser("json", { limit: "20mb" });
+
   app.enableCors({
     origin: true,
     credentials: true,
