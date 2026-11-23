@@ -6,7 +6,7 @@ import { DrizzleService } from "@shared/infra/database/drizzle/drizzle.service";
 import { and, eq } from "drizzle-orm";
 import { InteressePublicoDto } from "../../application/dto/registro.dto";
 import type { RegistroService } from "../../application/registro.service";
-import { INTERESSES } from "../../registros.config";
+import { HISTORICO, INTERESSES } from "../../registros.config";
 
 /** Campos de tela que não podem sair para o visitante. */
 const DETALHES_INTERNOS = ["bloqueio", "observacao"];
@@ -25,6 +25,7 @@ export class PublicoController {
   constructor(
     private readonly drizzle: DrizzleService,
     @Inject(INTERESSES) private readonly interesses: RegistroService,
+    @Inject(HISTORICO) private readonly historico: RegistroService,
   ) {}
 
   @Get("catalogo")
@@ -86,6 +87,17 @@ export class PublicoController {
         email: body.email.trim().toLowerCase(),
         telefone: body.telefone?.trim() ?? "",
         mensagem: body.mensagem?.trim() ?? "",
+      },
+    });
+    await this.historico.criar({
+      idLote: body.idLote,
+      status: "Interesse",
+      data: new Date().toISOString(),
+      detalhes: {
+        descricao: `Formulário recebido pelo catálogo público (${body.nome.trim()})`,
+        autor: "Catálogo público",
+        referencia: criado.codigo,
+        situacao: { rotulo: "Disponível", variante: "normal" },
       },
     });
     return { id: criado.id, codigo: criado.codigo };

@@ -15,6 +15,7 @@ export interface DefinicaoRegistro extends ConfigRegistro {
 }
 
 export const INTERESSES = Symbol("INTERESSES");
+export const HISTORICO = Symbol("HISTORICO");
 
 export const REGISTROS: DefinicaoRegistro[] = [
   {
@@ -34,6 +35,6 @@ export const REGISTROS: DefinicaoRegistro[] = [
     statusExigem: { cancelada: "CANCELAR_VENDA" },
   },
   { token: INTERESSES, rota: "interesses", nome: "Interesse", tabela: interesseSchema },
-  { token: Symbol("HISTORICO"), rota: "historico", nome: "Evento", tabela: historicoImovelSchema },
+  { token: HISTORICO, rota: "historico", nome: "Evento", tabela: historicoImovelSchema },
   { token: Symbol("DOCUMENTOS"), rota: "documentos", nome: "Documento", tabela: documentoImovelSchema },
 ];
