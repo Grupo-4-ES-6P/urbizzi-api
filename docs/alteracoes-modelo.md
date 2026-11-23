@@ -108,4 +108,4 @@ a senha dele; volta a `false` quando a própria pessoa troca ou redefine. O link
 `POST /anexos/upload` grava o arquivo em `uploads/` e cria a linha em `anexo` (`tipo_arquivo`, `caminho_arquivo`).
 Fotos e documentos guardam a URL `/uploads/...` em `lote.detalhes` / `documento_imovel.detalhes`.
 
-Notificações, dashboard e relatórios são calculados a partir desses dados; não têm tabela própria.
+Dashboard (incluindo os alertas de reserva vencendo e proposta pendente) e relatórios são calculados a partir desses dados; não têm tabela própria. Ainda não existe tela de notificações.
