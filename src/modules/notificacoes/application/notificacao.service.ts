@@ -1,9 +1,8 @@
 import { PermissaoService } from "@modules/permissoes/application/services/permissao.service";
-import { reservaSchema } from "@modules/registros/infra/schemas/registros.schema";
 import { usuariosSchema } from "@modules/usuarios/infra/schemas/usuario.schema";
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { DrizzleService } from "@shared/infra/database/drizzle/drizzle.service";
-import { and, count, desc, eq, gte, isNull, lte } from "drizzle-orm";
+import { and, count, desc, eq, isNull } from "drizzle-orm";
 import { notificacaoSchema } from "../infra/schemas/notificacao.schema";
 
 export interface Evento {
@@ -49,14 +48,10 @@ export function quemTemPermissao(usuarios: UsuarioAtivo[], perfisComPermissao: s
     .map((u) => u.id);
 }
 
-const HORA = 60 * 60 * 1000;
-const dataCurta = (d: Date) =>
-  d.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 
 @Injectable()
 export class NotificacaoService {
   private readonly logger = new Logger(NotificacaoService.name);
-  private ultimaVerificacao = 0;
 
   constructor(
     private readonly drizzle: DrizzleService,
@@ -81,7 +76,6 @@ export class NotificacaoService {
   }
 
   async listar(usuarioId: string): Promise<{ naoLidas: number; itens: NotificacaoResponse[] }> {
-    await this.lembrarReservasVencendo();
     const idUsuario = BigInt(usuarioId);
     const itens = await this.drizzle.db
       .select()
@@ -123,38 +117,6 @@ export class NotificacaoService {
       .update(notificacaoSchema)
       .set({ lidaEm: new Date() })
       .where(and(eq(notificacaoSchema.idUsuario, BigInt(usuarioId)), isNull(notificacaoSchema.lidaEm)));
-  }
-
-  /** Gerado ao abrir as notificações (no máx. 1x/min), sem agendador rodando. */
-  async lembrarReservasVencendo(agora = Date.now()): Promise<void> {
-    if (agora - this.ultimaVerificacao < 60_000) return;
-    this.ultimaVerificacao = agora;
-    try {
-      const vencendo = await this.drizzle.db
-        .select({ id: reservaSchema.id, codigo: reservaSchema.codigo, idLote: reservaSchema.idLote, data: reservaSchema.data })
-        .from(reservaSchema)
-        .where(
-          and(
-            eq(reservaSchema.status, "ativa"),
-            gte(reservaSchema.data, new Date(agora)),
-            lte(reservaSchema.data, new Date(agora + 48 * HORA)),
-          ),
-        );
-      for (const r of vencendo) {
-        await this.notificar(
-          {
-            tipo: "reserva_vencendo",
-            titulo: "Reserva perto de vencer",
-            mensagem: `A reserva ${r.codigo ?? `#${r.id}`} vence em ${dataCurta(r.data!)}.`,
-            link: r.idLote ? `/imoveis/${r.idLote}/acoes` : null,
-            chave: `reserva-vencendo:${r.id}`,
-          },
-          { permissao: "REGISTRAR_RESERVA" },
-        );
-      }
-    } catch (error) {
-      this.logger.error("Falha ao verificar reservas vencendo.", error);
-    }
   }
 
   private async comPermissao(permissao: string): Promise<bigint[]> {
