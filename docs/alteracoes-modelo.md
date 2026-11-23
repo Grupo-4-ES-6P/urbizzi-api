@@ -99,4 +99,13 @@ As FKs impedem excluir imóvel ou cliente que tenha reserva, venda ou histórico
 Criadas como `NOT VALID`: barram dado novo inválido sem rejeitar o que já existe. Depois de corrigir o legado,
 rode `ALTER TABLE <tabela> VALIDATE CONSTRAINT <nome>` para valer também para ele.
 
+## Senha provisória (migration 0018)
+`usuarios.trocar_senha` (boolean, padrão `false`). Fica `true` quando o administrador cria o usuário ou define
+a senha dele; volta a `false` quando a própria pessoa troca ou redefine. O link de recuperação não tem tabela:
+é um token assinado que expira em 1 h.
+
+## Arquivos enviados
+`POST /anexos/upload` grava o arquivo em `uploads/` e cria a linha em `anexo` (`tipo_arquivo`, `caminho_arquivo`).
+Fotos e documentos guardam a URL `/uploads/...` em `lote.detalhes` / `documento_imovel.detalhes`.
+
 Notificações, dashboard e relatórios são calculados a partir desses dados; não têm tabela própria.
