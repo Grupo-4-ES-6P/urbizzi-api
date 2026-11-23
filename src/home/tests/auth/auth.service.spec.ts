@@ -1,6 +1,7 @@
 import { AuthService } from "@modules/auth/application/services/auth.service";
 import { UsuarioAuthEntity } from "@modules/auth/domain/models/usuario-auth.entity";
 import type { AuthUsuarioRepository } from "@modules/auth/domain/repositories/auth-usuario.repository";
+import { StatusUsuario } from "@modules/usuarios/domain/models/usuario.entity";
 import { UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
@@ -31,15 +32,15 @@ const makeConfigService = (): ConfigServiceMock => ({
   get: jest.fn(),
 });
 
-const makeUsuario = (overrides?: Partial<UsuarioAuthEntity>) =>
+const makeUsuario = (overrides?: Partial<UsuarioAuthEntity>) => 
   new UsuarioAuthEntity({
-    id: 1n,
-    email: "admin@quadras.com",
-    senhaHash: "senha-hash",
-    idJogador: null,
-    idAdministrador: 7n,
-    permissoes: "ADMIN, FINANCEIRO",
-    ...overrides,
+    id: overrides?.id ?? 1n,
+    name: overrides?.name ?? "nome",
+    email: overrides?.email ?? "admin@quadras.com",
+    senhaHash: overrides?.senhaHash ?? "senha-hash",
+    anexoId: overrides?.anexoId ?? 7n,
+    permissoes: overrides?.permissoes ?? ["ADMIN", "FINANCEIRO"],
+    status: overrides?.status ?? StatusUsuario.ATIVO
   });
 
 describe("AuthService", () => {
@@ -106,10 +107,8 @@ describe("AuthService", () => {
     );
     const usuario = makeUsuario({
       id: 10n,
-      email: "Admin@Quadras.com",
-      idJogador: 22n,
-      idAdministrador: 33n,
-      permissoes: "ADMIN, FINANCEIRO,  ",
+      email: "admin@quadras.com",
+      permissoes: ["ADMIN", "FINANCEIRO"],
     });
 
     repository.findByEmail.mockResolvedValue(usuario);
@@ -118,7 +117,7 @@ describe("AuthService", () => {
     configService.get.mockReturnValue("2h");
 
     const result = await service.login({
-      email: "  ADMIN@QUADRAS.COM ",
+      email: " ADMIN@QUADRAS.COM ",
       senha: "senha-correta",
     });
 
@@ -126,9 +125,7 @@ describe("AuthService", () => {
     expect(compareMock).toHaveBeenCalledWith("senha-correta", "senha-hash");
     expect(jwtService.signAsync).toHaveBeenCalledWith({
       sub: "10",
-      email: "Admin@Quadras.com",
-      idJogador: "22",
-      idAdministrador: "33",
+      email: "admin@quadras.com",
       permissoes: ["ADMIN", "FINANCEIRO"],
     });
     expect(result).toEqual({
@@ -137,9 +134,7 @@ describe("AuthService", () => {
       expiresIn: "2h",
       usuario: {
         id: "10",
-        email: "Admin@Quadras.com",
-        idJogador: "22",
-        idAdministrador: "33",
+        email: "admin@quadras.com",
         permissoes: ["ADMIN", "FINANCEIRO"],
       },
     });
@@ -166,7 +161,7 @@ describe("AuthService", () => {
     });
 
     expect(result.expiresIn).toBe("1h");
-    expect(result.usuario.permissoes).toEqual([]);
+    expect(result.usuario.permissoes).toEqual(["ADMIN", "FINANCEIRO"]);
   });
 
   it("deve rejeitar login de usuário inativo", async () => {
@@ -177,11 +172,18 @@ describe("AuthService", () => {
       makeConfigService() as unknown as ConfigService,
     );
     repository.findByEmail.mockResolvedValue(
-      makeUsuario({ status: "INATIVO" }),
+      makeUsuario({ 
+        id: 2n,
+        name: "nome2",
+        email: "email@email.com",
+        senhaHash: "senha@senha",
+        anexoId: 22n,
+        status: StatusUsuario.INATIVO
+      }),
     );
 
     await expect(
-      service.login({ email: "cliente@example.com", senha: "qualquer" }),
+      service.login({ email: "email@email.com", senha: "senha@senha" }),
     ).rejects.toBeInstanceOf(UnauthorizedException);
     expect(compareMock).not.toHaveBeenCalled();
   });

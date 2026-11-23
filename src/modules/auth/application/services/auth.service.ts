@@ -33,6 +33,8 @@ export class AuthService {
   async login(data: LoginDto): Promise<AuthLoginResponse> {
     const email = data.email.trim().toLowerCase();
     const usuario = await this.authUsuarioRepository.findByEmail(email);
+    console.log(email);
+    console.log(usuario);
 
     if (!usuario) {
       throw new UnauthorizedException("Email ou senha inválidos.");
