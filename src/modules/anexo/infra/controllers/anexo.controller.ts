@@ -24,7 +24,11 @@ import { JwtAuthGuard } from "@shared/guards/jwt-auth.guard";
 import { PermissoesGuard } from "@shared/guards/permissoes.guard";
 import { CreateAnexoDto } from "../../application/dto/create-anexo.dto";
 import { UpdateAnexoDto } from "../../application/dto/update-anexo.dto";
-import { AnexoService, TIPOS_ARQUIVO_PERMITIDOS } from "../../application/services/anexo.service";
+import {
+  AnexoService,
+  TIPOS_ARQUIVO_PERMITIDOS,
+  tipoDoArquivo,
+} from "../../application/services/anexo.service";
 import type { AnexoEntity } from "../../domain/models/anexo.entity";
 
 interface AnexoResponse {
@@ -53,10 +57,11 @@ export class AnexoController {
         // Nome aleatório: ninguém adivinha o endereço de um documento
         filename: (_req, arquivo, pronto) => pronto(null, `${randomUUID()}${extname(arquivo.originalname).toLowerCase()}`),
       }),
-      limits: { fileSize: 15 * 1024 * 1024 },
+      limits: { fileSize: 20 * 1024 * 1024 },
       fileFilter: (_req, arquivo, aceitar) => {
-        const permitido = (TIPOS_ARQUIVO_PERMITIDOS as readonly string[]).includes(arquivo.mimetype);
-        aceitar(permitido ? null : new BadRequestException(`Tipo de arquivo não permitido: ${arquivo.mimetype}.`), permitido);
+        const tipo = tipoDoArquivo(arquivo.originalname, arquivo.mimetype);
+        const permitido = (TIPOS_ARQUIVO_PERMITIDOS as readonly string[]).includes(tipo);
+        aceitar(permitido ? null : new BadRequestException(`Tipo de arquivo não permitido: ${arquivo.mimetype || "desconhecido"}.`), permitido);
       },
     }),
   )
@@ -64,7 +69,10 @@ export class AnexoController {
   async upload(@UploadedFile() arquivo?: Express.Multer.File): Promise<AnexoResponse & { url: string }> {
     if (!arquivo) throw new BadRequestException("Envie o arquivo no campo 'arquivo'.");
     const caminho = `uploads/${arquivo.filename}`;
-    const anexo = await this.service.save({ tipoArquivo: arquivo.mimetype, caminhoArquivo: caminho });
+    const anexo = await this.service.save({
+      tipoArquivo: tipoDoArquivo(arquivo.originalname, arquivo.mimetype),
+      caminhoArquivo: caminho,
+    });
     return { ...this.toResponse(anexo), url: `/${caminho}` };
   }
 

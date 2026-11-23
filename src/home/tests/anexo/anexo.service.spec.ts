@@ -1,3 +1,4 @@
+import { tipoDoArquivo } from "@modules/anexo/application/services/anexo.service";
 import { describe, expect, it, jest } from "@jest/globals";
 import { AnexoService } from "@modules/anexo/application/services/anexo.service";
 import { AnexoEntity } from "@modules/anexo/domain/models/anexo.entity";
@@ -121,5 +122,14 @@ describe("AnexoService", () => {
     await expect(service.removeById("9")).rejects.toBeInstanceOf(
       NotFoundException,
     );
+  });
+});
+
+describe("tipoDoArquivo", () => {
+  it("normaliza DWG e ZIP pela extensão, sem liberar outros genéricos", () => {
+    expect(tipoDoArquivo("planta.DWG", "application/octet-stream")).toBe("image/vnd.dwg");
+    expect(tipoDoArquivo("docs.zip", "application/x-zip-compressed")).toBe("application/zip");
+    expect(tipoDoArquivo("virus.exe", "application/octet-stream")).toBe("application/octet-stream");
+    expect(tipoDoArquivo("foto.png", "image/png")).toBe("image/png");
   });
 });

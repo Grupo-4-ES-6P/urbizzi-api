@@ -18,7 +18,20 @@ export const TIPOS_ARQUIVO_PERMITIDOS = [
   "image/jpeg",
   "image/png",
   "image/webp",
+  "application/zip",
+  "image/vnd.dwg",
 ] as const;
+
+/** Navegadores mandam DWG/ZIP com tipos variados; normaliza só pela extensão conhecida. */
+export function tipoDoArquivo(nome: string, mimetype: string): string {
+  const extensao = nome.toLowerCase().split(".").pop();
+  const generico = ["", "application/octet-stream"].includes(mimetype);
+  if (extensao === "dwg" && (generico || ["application/acad", "application/x-dwg", "image/x-dwg"].includes(mimetype))) {
+    return "image/vnd.dwg";
+  }
+  if (extensao === "zip" && (generico || mimetype === "application/x-zip-compressed")) return "application/zip";
+  return mimetype;
+}
 
 @Injectable()
 export class AnexoService {
