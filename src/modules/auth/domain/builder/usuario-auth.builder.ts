@@ -27,7 +27,7 @@ export class UsuarioAuthBuilder {
         this.usuarioAuth.anexoId = anexoId;
         return this;
     }
-    withPermissions(permissions: string[]): UsuarioAuthBuilder {
+    withPermissions(permissions: string[] | null): UsuarioAuthBuilder {
         this.usuarioAuth.permissoes = permissions;
         return this;
     }
