@@ -77,7 +77,7 @@ export class PublicoController {
       .limit(1);
     if (!lote) throw new BadRequestException("Imóvel indisponível no catálogo.");
 
-    const criado = await this.interesses.criar({
+    let criado = await this.interesses.criar({
       codigo: body.codigo ?? null,
       idLote: body.idLote,
       status: "novo",
@@ -89,6 +89,10 @@ export class PublicoController {
         mensagem: body.mensagem?.trim() ?? "",
       },
     });
+    if (!criado.codigo) {
+      criado = await this.interesses.atualizar(criado.id, { codigo: `INT-${criado.id.padStart(4, "0")}` });
+    }
+
     await this.historico.criar({
       idLote: body.idLote,
       status: "Interesse",
