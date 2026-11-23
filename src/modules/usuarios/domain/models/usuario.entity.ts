@@ -16,6 +16,7 @@ export interface UsuarioProps {
   anexoId?: bigint | null;
   perfil?: Perfil | `${Perfil}`;
   ultimoAcesso?: Date | null;
+  trocarSenha?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -30,6 +31,7 @@ export class Usuario {
   private _anexoId?: bigint;
   private _perfil?: Perfil;
   private _ultimoAcesso?: Date | null;
+  private _trocarSenha?: boolean;
   private readonly _createdAt?: Date;
   private _updatedAt?: Date;
 
@@ -64,6 +66,9 @@ export class Usuario {
   }
   get ultimoAcesso() {
     return this._ultimoAcesso ?? null;
+  }
+  get trocarSenha() {
+    return this._trocarSenha ?? false;
   }
   get dateCreated() {
     return this._createdAt;
@@ -102,6 +107,9 @@ export class Usuario {
   }
   set ultimoAcesso(ultimoAcesso: Date | null) {
     this._ultimoAcesso = ultimoAcesso;
+  }
+  set trocarSenha(trocarSenha: boolean) {
+    this._trocarSenha = trocarSenha;
   }
   set dateUpdated(dateUpdated: Date) {
     this._updatedAt = dateUpdated;

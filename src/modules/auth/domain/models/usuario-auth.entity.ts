@@ -9,6 +9,7 @@ export interface UsuarioAuthEntityProps {
   permissoes: string[];
   status: string;
   perfil?: Perfil;
+  trocarSenha?: boolean;
 }
 
 export class UsuarioAuthEntity {
@@ -20,6 +21,7 @@ export class UsuarioAuthEntity {
   permissoes: string[] | null;
   status: string;
   perfil: Perfil;
+  trocarSenha: boolean;
 
   constructor(props: UsuarioAuthEntityProps) {
     this.id = props.id;
@@ -30,5 +32,6 @@ export class UsuarioAuthEntity {
     this.permissoes = props.permissoes;
     this.status = props.status ?? "ATIVO";
     this.perfil = props.perfil ?? Perfil.CORRETOR;
+    this.trocarSenha = props.trocarSenha ?? false;
   }
 }

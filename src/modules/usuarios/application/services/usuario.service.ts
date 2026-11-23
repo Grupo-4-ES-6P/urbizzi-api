@@ -31,7 +31,8 @@ export class UsuarioService {
     private readonly userRepository: UsuarioRepository,
   ) {}
 
-  async create(dto: CreateUsuarioDto): Promise<UsuarioResponseDto> {
+  /** Senha definida pelo admin é provisória: a pessoa troca no primeiro acesso. */
+  async create(dto: CreateUsuarioDto, { trocarSenha = true } = {}): Promise<UsuarioResponseDto> {
     const existing = await this.userRepository.findByEmail(
       dto.email.toLowerCase(),
     );
@@ -46,6 +47,7 @@ export class UsuarioService {
       .withPassword(hashedPassword)
       .withStatus(dto.status)
       .withPerfil(dto.perfil)
+      .withTrocarSenha(trocarSenha)
       .withPermissions(this.normalizePermissions(dto.permissions ?? []))
       .withAnexoId(dto.anexoId)
       .build()
@@ -108,6 +110,7 @@ export class UsuarioService {
       .withPassword(password)
       .withStatus(dto.status??current.status)
       .withPerfil(dto.perfil ?? current.perfil)
+      .withTrocarSenha(dto.password ? true : current.trocarSenha)
       .withPermissions(
         dto.permissions !== undefined 
         ? this.normalizePermissions(dto.permissions) 

@@ -3,6 +3,7 @@ import { perfilUsuarioEnum } from "@modules/permissoes/infra/schemas/perfil-perm
 
 import {
   bigint,
+  boolean,
   bigserial,
   pgEnum,
   pgTable,
@@ -26,6 +27,7 @@ export const usuariosSchema = pgTable("usuarios", {
   status: statusUsuarioEnum("status").notNull().default("PENDENTE_ATIVACAO"),
   perfil: perfilUsuarioEnum("perfil").notNull().default("CORRETOR"),
   ultimoAcesso: timestamp("ultimo_acesso", { withTimezone: true }),
+  trocarSenha: boolean("trocar_senha").notNull().default(false),
   anexoId: bigint("anexo_id", { mode: "bigint" }).references(() => anexoSchema.idAnexo), // FK opcional
   createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),

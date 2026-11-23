@@ -16,11 +16,26 @@ export class DrizzleAuthUsuarioRepository implements AuthUsuarioRepository {
       .from(usuariosSchema)
       .where(eq(usuariosSchema.email, email))
       .limit(1);
+    return usuario ? this.toEntity(usuario) : null;
+  }
 
-    if (!usuario) {
-      return null;
-    }
+  async findById(id: bigint): Promise<UsuarioAuthEntity | null> {
+    const [usuario] = await this.drizzleService.db
+      .select()
+      .from(usuariosSchema)
+      .where(eq(usuariosSchema.id, id))
+      .limit(1);
+    return usuario ? this.toEntity(usuario) : null;
+  }
 
+  async atualizarSenha(id: bigint, senhaHash: string): Promise<void> {
+    await this.drizzleService.db
+      .update(usuariosSchema)
+      .set({ password: senhaHash, trocarSenha: false, updatedAt: new Date() })
+      .where(eq(usuariosSchema.id, id));
+  }
+
+  private toEntity(usuario: typeof usuariosSchema.$inferSelect): UsuarioAuthEntity {
     return new UsuarioAuthBuilder(usuario.id)
       .withName(usuario.name)
       .withEmail(usuario.email)
@@ -29,6 +44,7 @@ export class DrizzleAuthUsuarioRepository implements AuthUsuarioRepository {
       .withPermissions(usuario.permissions)
       .withStatus(usuario.status)
       .withPerfil(usuario.perfil)
+      .withTrocarSenha(usuario.trocarSenha)
       .build();
   }
 

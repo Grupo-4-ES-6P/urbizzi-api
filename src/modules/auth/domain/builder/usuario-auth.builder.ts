@@ -39,6 +39,10 @@ export class UsuarioAuthBuilder {
         this.usuarioAuth.perfil = perfil as Perfil;
         return this;
     }
+    withTrocarSenha(trocarSenha: boolean): UsuarioAuthBuilder {
+        this.usuarioAuth.trocarSenha = trocarSenha;
+        return this;
+    }
     build(): UsuarioAuthEntity {
         return {...this.usuarioAuth} as UsuarioAuthEntity;
     }

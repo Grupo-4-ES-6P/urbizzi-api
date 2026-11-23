@@ -18,6 +18,7 @@ export class DrizzleUsuarioRepository implements UsuarioRepository {
       permissions: user.permissions,
       status: user.status,
       perfil: user.perfil,
+      trocarSenha: user.trocarSenha ?? false,
       anexoId: user.anexoId,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -34,6 +35,7 @@ export class DrizzleUsuarioRepository implements UsuarioRepository {
         permissions: user.permissions,
         status: user.status,
         perfil: user.perfil,
+        trocarSenha: user.trocarSenha ?? false,
         anexoId: user.anexoId,
         updatedAt: new Date(),
       })

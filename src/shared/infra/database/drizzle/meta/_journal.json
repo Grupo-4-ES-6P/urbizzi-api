@@ -127,6 +127,13 @@
       "when": 1795401760575,
       "tag": "0017_chaves_estrangeiras",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1795402616087,
+      "tag": "0018_trocar_senha",
+      "breakpoints": true
     }
   ]
 }

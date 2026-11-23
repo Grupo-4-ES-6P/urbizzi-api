@@ -67,7 +67,7 @@ export class UsuarioSeedService implements OnApplicationBootstrap {
         status: StatusUsuario.ATIVO,
         perfil: Perfil.ADMINISTRADOR,
         permissions: [],
-      });
+      }, { trocarSenha: false });
 
       this.logger.log(`Administrador inicial criado: ${email}`);
     } catch (error) {

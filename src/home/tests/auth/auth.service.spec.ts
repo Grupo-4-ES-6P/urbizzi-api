@@ -6,6 +6,7 @@ import { Perfil } from "@modules/permissoes/domain/permissoes.catalogo";
 import { UnauthorizedException } from "@nestjs/common";
 import type { ConfigService } from "@nestjs/config";
 import type { JwtService } from "@nestjs/jwt";
+import type { EmailService } from "@shared/infra/email/email.service";
 import { compare } from "bcryptjs";
 import type { Mock, Mocked, MockedFunction } from "jest-mock";
 
@@ -21,6 +22,8 @@ type PermissaoServiceMock = { permissoesDoUsuario: Mock };
 const makeRepository = (): AuthUsuarioRepositoryMock => ({
   findByEmail: jest.fn(),
   registrarAcesso: jest.fn(),
+  findById: jest.fn(),
+  atualizarSenha: jest.fn(),
 });
 
 const makeJwtService = (): JwtServiceMock => ({
@@ -55,13 +58,15 @@ const makeService = () => {
   const jwtService = makeJwtService();
   const configService = makeConfigService();
   const permissaoService = makePermissaoService();
+  const emailService = { enviar: jest.fn() };
   const service = new AuthService(
     repository,
     jwtService as unknown as JwtService,
     configService as unknown as ConfigService,
     permissaoService as unknown as PermissaoService,
+    emailService as unknown as EmailService,
   );
-  return { service, repository, jwtService, configService, permissaoService };
+  return { service, repository, jwtService, configService, permissaoService, emailService };
 };
 
 describe("AuthService", () => {
@@ -141,6 +146,7 @@ describe("AuthService", () => {
         email: "admin@urbizzi.com",
         perfil: Perfil.CORRETOR,
         permissoes: ["CLIENTE_VISUALIZAR", "CRIAR_PROPOSTA", "EXTRA"],
+        trocarSenha: false,
       },
     });
   });

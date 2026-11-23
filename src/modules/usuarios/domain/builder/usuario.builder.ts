@@ -52,6 +52,10 @@ export class UsuarioBuilder {
         }
         return this;
     }
+    withTrocarSenha(trocarSenha?: boolean): UsuarioBuilder {
+        this.usuario.trocarSenha = trocarSenha ?? false;
+        return this;
+    }
     withUltimoAcesso(ultimoAcesso?: Date | null): UsuarioBuilder {
         this.usuario.ultimoAcesso = ultimoAcesso ?? null;
         return this;
@@ -75,6 +79,7 @@ export class UsuarioBuilder {
         .withAnexoId(props.anexoId!)
         .withPerfil(props.perfil)
         .withUltimoAcesso(props.ultimoAcesso)
+        .withTrocarSenha(props.trocarSenha)
         .withUpdatedAt(props.updatedAt!)
         .build();
     return user;
