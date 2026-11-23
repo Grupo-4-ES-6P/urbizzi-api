@@ -148,6 +148,13 @@
       "when": 1795407417229,
       "tag": "0020_links_publicos",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1795408705742,
+      "tag": "0021_config_notificacao_e_relatorios",
+      "breakpoints": true
     }
   ]
 }

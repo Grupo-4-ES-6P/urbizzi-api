@@ -114,4 +114,16 @@ Tabela `notificacao`: uma linha por destinatário (`id_usuario` → `usuarios`, 
 aviso duas vezes. Eventos: interesse pelo site (quem cria proposta), proposta pendente (quem aprova), proposta
 aprovada/recusada (o autor) e reserva vencendo em 48 h (quem registra reserva).
 
+## Reserva = proposta pendente
+Não há tabela de reserva em uso: o lote fica `reservado` enquanto tem proposta `pendente`. O prazo da reserva é
+`proposta.prazo_resposta`; vencido, a API recusa a proposta ("Prazo de resposta expirado") e devolve o lote a
+`disponivel`. A tabela `reserva` continua existindo, sem uso pelas telas.
+
+## Links públicos (migration 0020)
+`link_publico`: `token` único, `escopo` (catalogo, loteamento, imovel), `alvo`, `expira_em`, `visitas`, `id_usuario`.
+
+## Configuração de notificações e relatórios gerados (migration 0021)
+`config_notificacao`: uma linha por tipo de alerta (`ativo`, `email`, `antecedencia_horas`); sem linha vale o padrão.
+`relatorio_gerado`: histórico dos relatórios exportados (`nome`, `periodo`, `formato`, `registros`, `id_usuario`).
+
 Dashboard (incluindo os alertas de reserva vencendo e proposta pendente) e relatórios são calculados a partir desses dados; não têm tabela própria.

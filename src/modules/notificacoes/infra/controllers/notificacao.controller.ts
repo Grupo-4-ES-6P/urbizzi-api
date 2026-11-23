@@ -1,16 +1,39 @@
-import { Controller, Get, HttpCode, Param, Patch, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Param, Patch, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
+import { Permissoes } from "@shared/decorators/permissoes.decorator";
 import { JwtAuthGuard, type RequestAuthUser } from "@shared/guards/jwt-auth.guard";
+import { PermissoesGuard } from "@shared/guards/permissoes.guard";
+import { ConfigNotificacaoService, SalvarConfigDto } from "../../application/config-notificacao.service";
 import { NotificacaoService } from "../../application/notificacao.service";
 
 type RequisicaoAutenticada = { user: RequestAuthUser };
 
 /** Cada usuário só enxerga e marca as próprias notificações. */
 @ApiTags("notificacoes")
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissoesGuard)
 @Controller("notificacoes")
 export class NotificacaoController {
-  constructor(private readonly service: NotificacaoService) {}
+  constructor(
+    private readonly service: NotificacaoService,
+    private readonly config: ConfigNotificacaoService,
+  ) {}
+
+  @Get("config")
+  listarConfig() {
+    return this.config.listar();
+  }
+
+  @Permissoes("GERENCIAR_USUARIOS")
+  @Put("config/:tipo")
+  salvarConfig(@Param("tipo") tipo: string, @Body() body: SalvarConfigDto) {
+    return this.config.salvar(tipo, body);
+  }
+
+  @Permissoes("GERENCIAR_USUARIOS")
+  @Get("envios")
+  envios() {
+    return this.service.envios();
+  }
 
   @Get()
   listar(@Req() req: RequisicaoAutenticada) {

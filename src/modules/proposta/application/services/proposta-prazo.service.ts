@@ -1,4 +1,5 @@
 import { loteSchema } from "@modules/lote/infra/schemas/lote.schema";
+import { ConfigNotificacaoService } from "@modules/notificacoes/application/config-notificacao.service";
 import { NotificacaoService } from "@modules/notificacoes/application/notificacao.service";
 import { Injectable, Logger, type OnApplicationBootstrap, type OnModuleDestroy } from "@nestjs/common";
 import { DrizzleService } from "@shared/infra/database/drizzle/drizzle.service";
@@ -18,6 +19,7 @@ export class PropostaPrazoService implements OnApplicationBootstrap, OnModuleDes
   constructor(
     private readonly drizzle: DrizzleService,
     private readonly notificacoes: NotificacaoService,
+    private readonly config: ConfigNotificacaoService,
   ) {}
 
   onApplicationBootstrap() {
@@ -48,7 +50,12 @@ export class PropostaPrazoService implements OnApplicationBootstrap, OnModuleDes
         detalhes: sql`${propostaSchema.detalhes} || ${JSON.stringify({ motivoRecusa: "Prazo de resposta expirado", decididaEm: agora.toISOString() })}::jsonb`,
       })
       .where(and(eq(propostaSchema.status, "pendente"), lt(propostaSchema.prazoResposta, agora)))
-      .returning({ idLote: propostaSchema.idLote });
+      .returning({
+        id: propostaSchema.idProposta,
+        codigo: propostaSchema.codigo,
+        idLote: propostaSchema.idLote,
+        idUsuario: propostaSchema.idUsuario,
+      });
     if (vencidas.length === 0) return 0;
 
     await this.drizzle.db
@@ -60,11 +67,24 @@ export class PropostaPrazoService implements OnApplicationBootstrap, OnModuleDes
           eq(loteSchema.estado, "reservado"),
         ),
       );
+    for (const p of vencidas) {
+      await this.notificacoes.notificar(
+        {
+          tipo: "reserva_expirada",
+          titulo: "Reserva expirada",
+          mensagem: `A proposta ${p.codigo ?? `#${p.id}`} passou do prazo sem resposta; o lote voltou a ficar disponível.`,
+          link: `/propostas/${p.id}`,
+          chave: `reserva-expirada:${p.id}`,
+        },
+        { usuarios: [p.idUsuario] },
+      );
+    }
     this.logger.log(`${vencidas.length} proposta(s) expirada(s); lote(s) liberado(s).`);
     return vencidas.length;
   }
 
   private async avisarVencendo(agora: Date): Promise<void> {
+    const horas = (await this.config.doTipo("reserva_vencendo"))?.antecedenciaHoras ?? 48;
     const vencendo = await this.drizzle.db
       .select({
         id: propostaSchema.idProposta,
@@ -78,7 +98,7 @@ export class PropostaPrazoService implements OnApplicationBootstrap, OnModuleDes
         and(
           eq(propostaSchema.status, "pendente"),
           gte(propostaSchema.prazoResposta, agora),
-          lte(propostaSchema.prazoResposta, new Date(agora.getTime() + 48 * HORA)),
+          lte(propostaSchema.prazoResposta, new Date(agora.getTime() + horas * HORA)),
         ),
       );
     for (const p of vencendo) {

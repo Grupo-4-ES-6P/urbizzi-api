@@ -19,6 +19,7 @@ import { QuadraModule } from "@modules/quadra/quadra.module";
 import { LoteModule } from "@modules/lote/lote.module";
 import { NotificacoesModule } from "@modules/notificacoes/notificacoes.module";
 import { LinksPublicosModule } from "@modules/links-publicos/links-publicos.module";
+import { RelatoriosModule } from "@modules/relatorios/relatorios.module";
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { LinksPublicosModule } from "@modules/links-publicos/links-publicos.modu
     RegistrosModule,
     NotificacoesModule,
     LinksPublicosModule,
+    RelatoriosModule,
     UsuariosModule,
     LogradouroModule,
     BairroModule,
