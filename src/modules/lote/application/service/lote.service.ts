@@ -1,164 +1,133 @@
 import { CreateLoteDto } from "@modules/lote/application/dto/lote-create.dto";
-import { UpdateLoteDto } from "../dto/lote-update.dto";
-import { ResponseLoteDto } from "../dto/lote-response.dto";
-import { Lote } from "@modules/lote/domain/model/lote.entity";
 import { LoteBuilder } from "@modules/lote/domain/builder/lote.builder";
+import type { Lote } from "@modules/lote/domain/model/lote.entity";
 import {
     LOTE_REPOSITORY,
-    type LoteRepository 
+    type FiltroLotes,
+    type LoteRepository,
 } from "@modules/lote/domain/repository/lote.repository.interface";
-import {
-  BadRequestException,
-  ConflictException,
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from "@nestjs/common";
+import { BadRequestException, ConflictException, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { ResponseLoteDto } from "../dto/lote-response.dto";
+import { UpdateLoteDto } from "../dto/lote-update.dto";
+
+const opcionalBigInt = (valor?: number | null) => (valor == null ? null : BigInt(valor));
 
 @Injectable()
 export class LoteService {
-
     constructor(
         @Inject(LOTE_REPOSITORY)
-        private readonly loteReposirory: LoteRepository
+        private readonly loteRepository: LoteRepository,
     ) {}
 
     async create(dto: CreateLoteDto): Promise<ResponseLoteDto> {
-        const exists = await this.loteReposirory.findByMatricula(dto.matricula??"")
-        if(exists) throw new ConflictException("Lote com essa matrícula já existente");
+        const matricula = dto.matricula?.trim() || null;
+        await this.validarMatricula(matricula);
 
-        const lote = new LoteBuilder(undefined, dto.idQuadra, dto.idLogradouro)
-            .withMatricula(dto.matricula)
-            .withTipo(dto.tipo)
+        const lote = new LoteBuilder()
+            .withMatricula(matricula)
+            .withTipo(dto.tipo.trim())
             .withAreaQuadrada(dto.areaQuadrada)
             .withValor(dto.valor)
             .withEstado(dto.estado)
-            .withInformacoesComplementares(dto.informacoesComplementares)
+            .withInformacoesComplementares(dto.informacoesComplementares?.trim() || null)
             .withLatitude(dto.latitude)
             .withLongitude(dto.longitude)
             .withPublicado(dto.publicado)
-            .withIdQuadra(dto.idQuadra)
-            .withIdLogradouro(dto.idLogradouro)
-            .withIdAnexo(dto.idAnexo)
-            .build()
-        
-        return this.toResponse(await this.loteReposirory.create(lote));
+            .withIdQuadra(opcionalBigInt(dto.idQuadra))
+            .withIdLogradouro(opcionalBigInt(dto.idLogradouro))
+            .withIdAnexo(opcionalBigInt(dto.idAnexo))
+            .withDetalhes(dto.detalhes)
+            .build();
+
+        return this.toResponse(await this.loteRepository.create(lote));
     }
 
+    /** Campo ausente mantém o valor; null apaga. */
     async update(id: string, dto: UpdateLoteDto): Promise<ResponseLoteDto> {
         const parsedId = this.parseBigInt(id, "id");
-        const current = await this.loteReposirory.findById(parsedId);
+        const atual = await this.loteRepository.findById(parsedId);
+        if (!atual) throw new NotFoundException("Lote não encontrado");
 
-        if (!current) throw new NotFoundException("Lote não encontrado");
+        const escolher = <T>(novo: T | undefined, anterior: T) => (novo === undefined ? anterior : novo);
+        const matricula = dto.matricula === undefined ? atual.matricula : dto.matricula?.trim() || null;
+        await this.validarMatricula(matricula, parsedId);
 
-        if (dto.matricula !== undefined) {
-            const exists = await this.loteReposirory.findByMatricula(dto.matricula!);
-            if (exists) throw new ConflictException("Lote com essa matrícula já existente");
-        }
-
-        const updatedLote = new LoteBuilder(
-            parsedId, 
-            dto.idQuadra ?? current.idQuadra, 
-            dto.idLogradouro ?? current.idLogradouro)
-            .withMatricula(dto.matricula ?? current.matricula)
-            .withTipo(dto.tipo ?? current.tipo!)
-            .withAreaQuadrada(dto.areaQuadrada ?? current.areaQuadrada!)
-            .withValor(dto.valor ?? current.valor!)
-            .withEstado(dto.estado ?? current.estado!)
-            .withInformacoesComplementares(dto.informacoesComplementares ?? current.informacoesComplementares!)
-            .withLatitude(dto.latitude ?? current.latitude!)
-            .withLongitude(dto.longitude ?? current.longitude!)
-            .withPublicado(dto.publicado ?? current.publicado!)
-            .withIdAnexo(dto.idAnexo ?? current.idAnexo)
+        const lote = new LoteBuilder(parsedId)
+            .withMatricula(matricula)
+            .withTipo(dto.tipo?.trim() || atual.tipo)
+            .withAreaQuadrada(escolher(dto.areaQuadrada, atual.areaQuadrada))
+            .withValor(escolher(dto.valor, atual.valor))
+            .withEstado(dto.estado ?? atual.estado)
+            .withInformacoesComplementares(escolher(dto.informacoesComplementares, atual.informacoesComplementares))
+            .withLatitude(escolher(dto.latitude, atual.latitude))
+            .withLongitude(escolher(dto.longitude, atual.longitude))
+            .withPublicado(dto.publicado ?? atual.publicado)
+            .withIdQuadra(dto.idQuadra === undefined ? atual.idQuadra : opcionalBigInt(dto.idQuadra))
+            .withIdLogradouro(dto.idLogradouro === undefined ? atual.idLogradouro : opcionalBigInt(dto.idLogradouro))
+            .withIdAnexo(dto.idAnexo === undefined ? atual.idAnexo : opcionalBigInt(dto.idAnexo))
+            .withDetalhes(dto.detalhes ?? atual.detalhes)
+            .withCreatedAt(atual.createdAt)
             .build();
-        
-        await this.loteReposirory.update(updatedLote);
 
-        const updated = await this.loteReposirory.findById(parsedId);
-        if (updated === current || updated === null) throw new InternalServerErrorException("Erro ao atualizar o lote");
-
-        return this.toResponse(updated);
+        const salvo = await this.loteRepository.update(lote);
+        if (!salvo) throw new NotFoundException("Lote não encontrado");
+        return this.toResponse(salvo);
     }
 
-    async delete(id: string): Promise<boolean> {
+    async delete(id: string): Promise<void> {
         const parsedId = this.parseBigInt(id, "id");
-        const lote = await this.loteReposirory.findById(parsedId);
-        if (!lote) throw new  NotFoundException("Lote não encontrado");
-
-        await this.loteReposirory.delete(parsedId);
-
-        const deletedLote = await this.loteReposirory.findById(parsedId);
-        if (deletedLote) throw new InternalServerErrorException("Erro ao apagar o lote");
-
-        return true;
+        if (!(await this.loteRepository.findById(parsedId))) throw new NotFoundException("Lote não encontrado");
+        await this.loteRepository.delete(parsedId);
     }
 
-    async findAll(): Promise<ResponseLoteDto[]> {
-        const lotes = await this.loteReposirory.findAll();
-
+    async findAll(filtro: { idQuadra?: string; idLogradouro?: string; matricula?: string } = {}): Promise<ResponseLoteDto[]> {
+        const filtroRepo: FiltroLotes = {
+            idQuadra: filtro.idQuadra ? this.parseBigInt(filtro.idQuadra, "idQuadra") : undefined,
+            idLogradouro: filtro.idLogradouro ? this.parseBigInt(filtro.idLogradouro, "idLogradouro") : undefined,
+            matricula: filtro.matricula?.trim() || undefined,
+        };
+        const lotes = await this.loteRepository.findAll(filtroRepo);
         return lotes.map((lote) => this.toResponse(lote));
     }
 
     async findById(id: string): Promise<ResponseLoteDto> {
-        const parsedId = this.parseBigInt(id, "id");
-        const lote = await this.loteReposirory.findById(parsedId);
+        const lote = await this.loteRepository.findById(this.parseBigInt(id, "id"));
         if (!lote) throw new NotFoundException("Lote não encontrado");
-
         return this.toResponse(lote);
     }
 
-    async findByMatricula(matricula: string): Promise<ResponseLoteDto> {
-        const lote = await this.loteReposirory.findByMatricula(matricula);
-        if (!lote) throw new NotFoundException("Lote não encontrado");
-        
-        return this.toResponse(lote);
+    private async validarMatricula(matricula: string | null, ignorarId?: bigint) {
+        if (!matricula) return;
+        const existente = await this.loteRepository.findByMatricula(matricula);
+        if (existente && existente.id !== ignorarId) {
+            throw new ConflictException("Lote com essa matrícula já existente");
+        }
     }
 
-    async findByQuadra(idQuadra: string): Promise<ResponseLoteDto[]> {
-        const parsedId = this.parseBigInt(idQuadra, "idQuadra");
-        const lotes = await this.loteReposirory.findByQuadra(parsedId);
-        
-        return lotes.map((lote) => this.toResponse(lote));
-    }
-
-    async findByLogradouro(idLogradouro: string): Promise<ResponseLoteDto[]> {
-        const parsedId = this.parseBigInt(idLogradouro, "idLogradouro");
-        const lotes = await this.loteReposirory.findByLogradouro(parsedId);
-
-        return lotes.map((lote) => this.toResponse(lote));
-    }
-
-    // common
-        
     private toResponse(lote: Lote): ResponseLoteDto {
         return {
             id: lote.id!.toString(),
-            matricula: lote.matricula?.toString(),
-            tipo: lote.tipo!.toString(),
-            areaQuadrada: lote.areaQuadrada!,
-            valor: lote.valor!,
-            estado: lote.estado!.toString(),
-            informacoesComplementares: lote.informacoesComplementares?.toString(),
-            latitude: lote.latitude!,
-            longitude: lote.longitude!,
-            publicado: lote.publicado!,
-            idQuadra: lote.idQuadra.toString(),
-            idLogradouro: lote.idLogradouro.toString(),
-            idAnexo: lote.idAnexo?.toLocaleString(),
-            createdAt: lote.createdAt!.toDateString(),
-            updatedAt: lote.updatedAt!.toDateString()
+            matricula: lote.matricula,
+            tipo: lote.tipo,
+            areaQuadrada: lote.areaQuadrada,
+            valor: lote.valor,
+            estado: lote.estado,
+            informacoesComplementares: lote.informacoesComplementares,
+            latitude: lote.latitude,
+            longitude: lote.longitude,
+            publicado: lote.publicado,
+            idQuadra: lote.idQuadra?.toString() ?? null,
+            idLogradouro: lote.idLogradouro?.toString() ?? null,
+            idAnexo: lote.idAnexo?.toString() ?? null,
+            detalhes: lote.detalhes,
+            createdAt: lote.createdAt.toISOString(),
+            updatedAt: lote.updatedAt.toISOString(),
         };
     }
 
     private parseBigInt(value: string, fieldName: string): bigint {
-    const normalizedValue = value.trim();
-
-    if (!/^\d+$/.test(normalizedValue)) {
-      throw new BadRequestException(`${fieldName} inválido.`);
+        const normalizedValue = value.trim();
+        if (!/^\d+$/.test(normalizedValue)) throw new BadRequestException(`${fieldName} inválido.`);
+        return BigInt(normalizedValue);
     }
-
-    return BigInt(normalizedValue);
-    }
-
 }

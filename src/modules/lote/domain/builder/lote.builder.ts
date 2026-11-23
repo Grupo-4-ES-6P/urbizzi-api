@@ -1,102 +1,77 @@
-import {
-    Lote,
-    LoteProps
-} from "@modules/lote/domain/model/lote.entity"
+import { Lote, type LoteProps } from "../model/lote.entity";
 
 export class LoteBuilder {
-    private lote: Partial<Lote> = {}
+    private props: Partial<LoteProps> = { detalhes: {} };
 
-    constructor(id: bigint | undefined, idQuadra: bigint, idLogradouro: bigint) {
-        this.lote.id = id;
-        this.lote.idQuadra = idQuadra;
-        this.lote.idLogradouro = idLogradouro;
+    constructor(id?: bigint) {
+        this.props.id = id;
     }
 
-    // builders
-    withMatricula(matricula: string | null | undefined): LoteBuilder {
-        if (matricula === null || matricula === undefined) return this;
-        this.lote.matricula = matricula!;
-        return this;
-    }
-    withNumeroLote(numeroLote: number): LoteBuilder {
-        this.lote.numeroLote = numeroLote;
+    withMatricula(matricula?: string | null): LoteBuilder {
+        this.props.matricula = matricula ?? null;
         return this;
     }
     withTipo(tipo: string): LoteBuilder {
-        this.lote.tipo = tipo;
+        this.props.tipo = tipo;
         return this;
     }
-    withAreaQuadrada(areaQuadrada: number): LoteBuilder {
-        this.lote.areaQuadrada = areaQuadrada;
+    withAreaQuadrada(areaQuadrada?: number | null): LoteBuilder {
+        this.props.areaQuadrada = areaQuadrada ?? null;
         return this;
     }
-    withValor(valor: number): LoteBuilder {
-        this.lote.valor = valor;
+    withValor(valor?: number | null): LoteBuilder {
+        this.props.valor = valor ?? null;
         return this;
     }
     withEstado(estado: string): LoteBuilder {
-        this.lote.estado = estado;
+        this.props.estado = estado;
         return this;
     }
-    withInformacoesComplementares(informacoesComplementares: string | null | undefined): LoteBuilder {
-        if (informacoesComplementares === null || informacoesComplementares === undefined) return this;
-        this.lote.informacoesComplementares = informacoesComplementares!;
+    withInformacoesComplementares(informacoes?: string | null): LoteBuilder {
+        this.props.informacoesComplementares = informacoes ?? null;
         return this;
     }
-    withLatitude(latitude: number): LoteBuilder {
-        this.lote.latitude = latitude;
+    withLatitude(latitude?: number | null): LoteBuilder {
+        this.props.latitude = latitude ?? null;
         return this;
     }
-    withLongitude(longitude: number): LoteBuilder {
-        this.lote.longitude = longitude;
+    withLongitude(longitude?: number | null): LoteBuilder {
+        this.props.longitude = longitude ?? null;
         return this;
     }
     withPublicado(publicado: boolean): LoteBuilder {
-        this.lote.publicado = publicado;
+        this.props.publicado = publicado;
         return this;
     }
-    withIdQuadra(idQuadra: bigint): LoteBuilder {
-        this.lote.idQuadra = idQuadra;
+    withIdQuadra(idQuadra?: bigint | null): LoteBuilder {
+        this.props.idQuadra = idQuadra ?? null;
         return this;
     }
-    withIdLogradouro(idLogradouro: bigint): LoteBuilder {
-        this.lote.idLogradouro = idLogradouro;
+    withIdLogradouro(idLogradouro?: bigint | null): LoteBuilder {
+        this.props.idLogradouro = idLogradouro ?? null;
         return this;
     }
-    withIdAnexo(idAnexo: bigint | null | undefined): LoteBuilder {
-        if (!idAnexo) return this;
-        this.lote.idAnexo = idAnexo!;
+    withIdAnexo(idAnexo?: bigint | null): LoteBuilder {
+        this.props.idAnexo = idAnexo ?? null;
+        return this;
+    }
+    withDetalhes(detalhes?: Record<string, unknown> | null): LoteBuilder {
+        this.props.detalhes = detalhes ?? {};
         return this;
     }
     withCreatedAt(createdAt: Date): LoteBuilder {
-        this.lote.createdAt = createdAt;
+        this.props.createdAt = createdAt;
         return this;
     }
     withUpdatedAt(updatedAt: Date): LoteBuilder {
-        this.lote.updatedAt = updatedAt;
+        this.props.updatedAt = updatedAt;
         return this;
     }
-    build() {
-        return {...this.lote} as Lote;
+    build(): Lote {
+        return new Lote(this.props as LoteProps);
     }
 
-    static restore(props?: LoteProps): Lote | null {
-        if(!props) return null;
-        const lote = new LoteBuilder(props.id, props.idQuadra, props.idLogradouro)
-            .withMatricula(props.matricula!)
-            .withNumeroLote(props.numeroLote!)
-            .withTipo(props.tipo!)
-            .withAreaQuadrada(props.areaQuadrada!)
-            .withValor(props.valor!)
-            .withEstado(props.estado!)
-            .withInformacoesComplementares(props.informacoesComplementares!)
-            .withLatitude(props.latitude!)
-            .withLongitude(props.longitude!)
-            .withPublicado(props.publicado!)
-            .withIdAnexo(props.idAnexo!)
-            .withCreatedAt(props.createdAt!)
-            .withUpdatedAt(props.updatedAt!)
-            .build();
-        return lote;
+    static restore(props?: LoteProps | null): Lote | null {
+        return props ? new Lote(props) : null;
     }
 }

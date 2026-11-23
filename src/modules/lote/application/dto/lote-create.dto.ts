@@ -1,21 +1,26 @@
 import { ApiProperty } from "@nestjs/swagger";
 import {
-  IsNumber,
+  IsBoolean,
+  IsIn,
   IsInt,
   IsNotEmpty,
+  IsNumber,
+  IsObject,
   IsOptional,
   IsString,
+  Max,
   MaxLength,
-  IsBoolean,
-  IsDate,
+  Min,
 } from "class-validator";
 
+export const ESTADOS_LOTE = ["disponivel", "reservado", "vendido", "bloqueado"] as const;
+
 export class CreateLoteDto {
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsOptional()
     @IsString()
     @MaxLength(516)
-    matricula?: string | null | undefined;
+    matricula?: string | null;
 
     @ApiProperty()
     @IsString()
@@ -23,69 +28,66 @@ export class CreateLoteDto {
     @MaxLength(128)
     tipo!: string;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsNumber()
-    areaQuadrada!: number;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsNumber()
-    valor!: number;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsString()
-    @MaxLength(256)
-    estado!: string;
-
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsOptional()
-    @IsString()
-    @MaxLength(1024)
-    informacoesComplementares?: string | null | undefined;
-
-    @ApiProperty()
-    @IsNotEmpty()
     @IsNumber()
-    latitude!: number;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsNumber()
-    longitude!: number;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsBoolean()
-    publicado!: boolean;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsNumber()
-    @IsInt()
-    idQuadra!: bigint;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsNumber()
-    @IsInt()
-    idLogradouro!: bigint;
+    @Min(0)
+    areaQuadrada?: number | null;
 
     @ApiProperty({ required: false })
     @IsOptional()
     @IsNumber()
+    @Min(0)
+    valor?: number | null;
+
+    @ApiProperty({ enum: ESTADOS_LOTE })
+    @IsIn(ESTADOS_LOTE)
+    estado!: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsString()
+    @MaxLength(1024)
+    informacoesComplementares?: string | null;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsNumber()
+    @Min(-90)
+    @Max(90)
+    latitude?: number | null;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsNumber()
+    @Min(-180)
+    @Max(180)
+    longitude?: number | null;
+
+    @ApiProperty()
+    @IsBoolean()
+    publicado!: boolean;
+
+    @ApiProperty({ required: false, description: "Vazio para imóvel avulso ou rascunho" })
+    @IsOptional()
     @IsInt()
-    idAnexo?: bigint | null;
+    @Min(1)
+    idQuadra?: number | null;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsOptional()
-    @IsDate()
-    createdAt?: Date | null | undefined;
+    @IsInt()
+    @Min(1)
+    idLogradouro?: number | null;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     @IsOptional()
-    @IsDate()
-    updatedAt?: Date | null | undefined; 
+    @IsInt()
+    @Min(1)
+    idAnexo?: number | null;
 
+    @ApiProperty({ required: false, description: "Dados de tela do imóvel (código, fotos, bloqueio...)" })
+    @IsOptional()
+    @IsObject()
+    detalhes?: Record<string, unknown>;
 }

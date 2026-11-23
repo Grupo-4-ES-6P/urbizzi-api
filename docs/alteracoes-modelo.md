@@ -67,6 +67,8 @@ Contatos comerciais do cliente (RF12). `id_cliente` → `cliente` com `ON DELETE
 | Mudança | Migration |
 |---|---|
 | `id_quadra`, `id_logradouro` e `id_anexo` passam de `bigserial` para `bigint`; `id_anexo` aceita nulo (lote sem anexo dava erro de FK) | 0014 |
+| `id_quadra`, `id_logradouro`, `area_quadrada`, `valor`, `latitude` e `longitude` aceitam nulo (imóvel avulso ou em rascunho) | 0015 |
+| `detalhes` `jsonb`: dados de tela do imóvel (código, título, frente/fundo, valor mínimo, fotos, bloqueio, destaque…) | 0015 |
 
 ## Pendente
 Reservas, vendas, documentos, histórico do imóvel, interesses do catálogo público, notificações e relatórios
