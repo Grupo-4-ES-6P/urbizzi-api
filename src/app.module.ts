@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { ThrottlerModule } from "@nestjs/throttler";
 import { SharedModule } from "@shared/shared.module";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -22,6 +23,8 @@ import { LoteModule } from "@modules/lote/lote.module";
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    // Só vale nas rotas com ThrottlerGuard (públicas e de senha)
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 60 }]),
     SharedModule,
     AnexoModule,
     AuthModule,

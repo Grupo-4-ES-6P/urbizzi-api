@@ -21,6 +21,9 @@ async function bootstrap() {
   // Fotos do imóvel vão no JSON (limite igual ao do Nginx)
   app.useBodyParser("json", { limit: "20mb" });
 
+  // Atrás do Nginx: o IP do cliente vem no X-Forwarded-For
+  app.set("trust proxy", 1);
+
   app.enableCors({
     origin: true,
     credentials: true,

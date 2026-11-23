@@ -1,6 +1,7 @@
 import { loteSchema } from "@modules/lote/infra/schemas/lote.schema";
 import { loteamentoSchema } from "@modules/loteamento/infra/schemas/loteamento.schema";
-import { BadRequestException, Body, Controller, Get, Inject, Post } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Inject, Post, UseGuards } from "@nestjs/common";
+import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
 import { ApiTags } from "@nestjs/swagger";
 import { DrizzleService } from "@shared/infra/database/drizzle/drizzle.service";
 import { and, eq } from "drizzle-orm";
@@ -68,6 +69,8 @@ export class PublicoController {
     };
   }
 
+  @UseGuards(ThrottlerGuard)
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post("interesses")
   async registrarInteresse(@Body() body: InteressePublicoDto) {
     const [lote] = await this.drizzle.db
