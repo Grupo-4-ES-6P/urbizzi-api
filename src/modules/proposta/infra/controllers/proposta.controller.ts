@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Delete,
   Get,
   HttpCode,
@@ -10,6 +11,9 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
+import { NotificacaoService } from "@modules/notificacoes/application/notificacao.service";
+import { Permissoes } from "@shared/decorators/permissoes.decorator";
+import { PermissoesGuard } from "@shared/guards/permissoes.guard";
 import {
   JwtAuthGuard,
   type RequestAuthUser,
@@ -22,6 +26,8 @@ import type { PropostaEntity } from "../../domain/models/proposta.entity";
 
 interface PropostaResponse {
   idProposta: number;
+  codigo: string | null;
+  detalhes: Record<string, unknown>;
   valor: string;
   condicoes: string;
   observacoes: string | null;
@@ -37,17 +43,35 @@ interface PropostaResponse {
   idCliente: number;
 }
 
-@UseGuards(JwtAuthGuard)
+const STATUS_DE_DECISAO = ["aprovada", "recusada"];
+
+/** Aprovar ou recusar exige a permissão da matriz. */
+function exigirAprovacao(status: string | undefined, usuario?: RequestAuthUser) {
+  if (!usuario || !status || !STATUS_DE_DECISAO.includes(status)) return;
+  const permissoes = usuario.permissoes ?? [];
+  if (!permissoes.includes("ADMIN") && !permissoes.includes("APROVAR_PROPOSTA")) {
+    throw new ForbiddenException("Você não pode aprovar ou recusar propostas.");
+  }
+}
+
+@UseGuards(JwtAuthGuard, PermissoesGuard)
 @Controller("propostas")
 export class PropostaController {
-  constructor(private readonly service: PropostaService) {}
+  constructor(
+    private readonly service: PropostaService,
+    private readonly notificacoes: NotificacaoService,
+  ) {}
 
+  @Permissoes("CRIAR_PROPOSTA")
   @Post()
   async save(
     @Body() body: CreatePropostaDto,
     @Req() request: Request & { user: RequestAuthUser },
   ): Promise<PropostaResponse> {
-    return this.toResponse(await this.service.save(body, request.user.sub));
+    exigirAprovacao(body.status, request.user);
+    const proposta = await this.service.save(body, request.user.sub);
+    await this.avisar(null, proposta, request.user.sub);
+    return this.toResponse(proposta);
   }
 
   @Get()
@@ -61,23 +85,65 @@ export class PropostaController {
     return this.toResponse(await this.service.findById(id));
   }
 
+  @Permissoes("CRIAR_PROPOSTA")
   @Patch(":id")
   async update(
     @Param("id") id: string,
     @Body() body: UpdatePropostaDto,
+    @Req() request?: Request & { user: RequestAuthUser },
   ): Promise<PropostaResponse> {
-    return this.toResponse(await this.service.updateById(id, body));
+    exigirAprovacao(body.status, request?.user);
+    const anterior = body.status || body.valor ? await this.service.findById(id) : null;
+    const proposta = await this.service.updateById(id, body);
+    if (anterior) await this.avisar(anterior, proposta, request?.user.sub);
+    return this.toResponse(proposta);
   }
 
+  @Permissoes("CRIAR_PROPOSTA")
   @HttpCode(204)
   @Delete(":id")
   async remove(@Param("id") id: string): Promise<void> {
     await this.service.removeById(id);
   }
 
+  private async avisar(anterior: PropostaEntity | null, atual: PropostaEntity, autorDoAto?: string) {
+    const nome = atual.codigo ?? `#${atual.idProposta}`;
+    const link = `/propostas/${atual.idProposta}`;
+    const novaVersao = !anterior || anterior.status !== atual.status || anterior.valor !== atual.valor;
+
+    if (atual.status === "pendente" && novaVersao) {
+      const valor = Number(atual.valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+      await this.notificacoes.notificar(
+        {
+          tipo: "proposta_pendente",
+          titulo: "Proposta aguardando análise",
+          mensagem: `A proposta ${nome}, de ${valor}, precisa de aprovação.`,
+          link,
+          chave: `proposta-pendente:${atual.idProposta}:${atual.versao}`,
+        },
+        { permissao: "APROVAR_PROPOSTA", exceto: autorDoAto },
+      );
+    }
+
+    if (STATUS_DE_DECISAO.includes(atual.status) && anterior?.status !== atual.status) {
+      await this.notificacoes.notificar(
+        {
+          tipo: `proposta_${atual.status}`,
+          titulo: atual.status === "aprovada" ? "Proposta aprovada" : "Proposta recusada",
+          mensagem: `Sua proposta ${nome} foi ${atual.status}.`,
+          link,
+          chave: `proposta-${atual.status}:${atual.idProposta}`,
+        },
+        { usuarios: [atual.idUsuario], exceto: autorDoAto },
+      );
+    }
+  }
+
   private toResponse(proposta: PropostaEntity): PropostaResponse {
     return {
       idProposta: proposta.idProposta,
+      codigo: proposta.codigo,
+      detalhes: proposta.detalhes,
       valor: proposta.valor,
       condicoes: proposta.condicoes,
       observacoes: proposta.observacoes,

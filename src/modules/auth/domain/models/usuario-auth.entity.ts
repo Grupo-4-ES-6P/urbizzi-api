@@ -1,3 +1,5 @@
+import { Perfil } from "@modules/permissoes/domain/permissoes.catalogo";
+
 export interface UsuarioAuthEntityProps {
   id: bigint;
   name: string;
@@ -6,6 +8,8 @@ export interface UsuarioAuthEntityProps {
   anexoId: bigint | null;
   permissoes: string[] | null;
   status: string;
+  perfil?: Perfil;
+  trocarSenha?: boolean;
 }
 
 export class UsuarioAuthEntity {
@@ -16,6 +20,8 @@ export class UsuarioAuthEntity {
   anexoId: bigint | null;
   permissoes: string[] | null;
   status: string;
+  perfil: Perfil;
+  trocarSenha: boolean;
 
   constructor(props: UsuarioAuthEntityProps) {
     this.id = props.id;
@@ -25,5 +31,7 @@ export class UsuarioAuthEntity {
     this.anexoId = props.anexoId;
     this.permissoes = props.permissoes;
     this.status = props.status ?? "ATIVO";
+    this.perfil = props.perfil ?? Perfil.CORRETOR;
+    this.trocarSenha = props.trocarSenha ?? false;
   }
 }

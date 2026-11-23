@@ -1,0 +1,7 @@
+services:
+  api:
+    build:
+      context: ..
+  web:
+    build:
+      context: ${WEB_PATH:-../../urbizzi-web}

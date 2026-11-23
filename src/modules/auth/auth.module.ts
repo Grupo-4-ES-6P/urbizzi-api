@@ -1,7 +1,10 @@
 import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
+import { JwtAuthGuard } from "@shared/guards/jwt-auth.guard";
 import { DrizzleService } from "@shared/infra/database/drizzle/drizzle.service";
+import { EmailService } from "@shared/infra/email/email.service";
+import { PermissoesModule } from "@modules/permissoes/permissoes.module";
 import type { StringValue } from "ms";
 import { AuthService } from "./application/services/auth.service";
 import { AUTH_USUARIO_REPOSITORY } from "./domain/repositories/auth-usuario.repository";
@@ -10,6 +13,7 @@ import { DrizzleAuthUsuarioRepository } from "./infra/repositories/drizzle-auth-
 
 @Module({
   imports: [
+    PermissoesModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
@@ -31,6 +35,8 @@ import { DrizzleAuthUsuarioRepository } from "./infra/repositories/drizzle-auth-
   providers: [
     AuthService,
     DrizzleService,
+    EmailService,
+    JwtAuthGuard,
     {
       provide: AUTH_USUARIO_REPOSITORY,
       useClass: DrizzleAuthUsuarioRepository,

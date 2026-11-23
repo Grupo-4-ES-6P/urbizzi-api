@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
@@ -9,6 +11,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Permissoes } from "@shared/decorators/permissoes.decorator";
+import { Permission } from "@shared/domain/enums/permission.enum";
 import { JwtAuthGuard } from "@shared/guards/jwt-auth.guard";
 import { PermissoesGuard } from "@shared/guards/permissoes.guard";
 import { CreateClienteDto } from "../../application/dto/create-cliente.dto";
@@ -18,7 +21,21 @@ import {
   type ClientePaginacao,
   ClienteService,
 } from "../../application/services/cliente.service";
-import type { ClienteEntity } from "../../domain/models/cliente.entity";
+import type {
+  ClienteEntity,
+  ContatoComercial,
+} from "../../domain/models/cliente.entity";
+
+interface EnderecoHttpResponse {
+  cep: string | null;
+  logradouro: string | null;
+  numero: string | null;
+  complemento: string | null;
+  bairro: string | null;
+  cidade: string | null;
+  uf: string | null;
+  pais: string | null;
+}
 
 interface ClienteHttpResponse {
   id: string;
@@ -28,9 +45,18 @@ interface ClienteHttpResponse {
   razaoSocial: string | null;
   nomeFantasia: string | null;
   nomeExibicao: string;
-  telefone: string;
+  telefone: string | null;
+  celular: string | null;
   email: string | null;
   origem: string | null;
+  rg: string | null;
+  dataNascimento: string | null;
+  estadoCivil: string | null;
+  profissao: string | null;
+  responsavel: string | null;
+  imovelInteresseId: string | null;
+  endereco: EnderecoHttpResponse;
+  contatos: ContatoComercial[];
   status: string;
   dataCadastro: string;
   dataAtualizacao: string;
@@ -94,6 +120,13 @@ export class ClienteController {
     return this.toResponse(await this.clienteService.reactivate(id));
   }
 
+  @Permissoes(Permission.CLIENTE_EXCLUIR)
+  @HttpCode(204)
+  @Delete(":id")
+  async remove(@Param("id") id: string): Promise<void> {
+    await this.clienteService.delete(id);
+  }
+
   private toResponse(cliente: ClienteEntity): ClienteHttpResponse {
     return {
       id: cliente.id?.toString() ?? "",
@@ -104,8 +137,26 @@ export class ClienteController {
       nomeFantasia: cliente.nomeFantasia,
       nomeExibicao: cliente.nomeExibicao,
       telefone: cliente.telefone,
+      celular: cliente.celular,
       email: cliente.email,
       origem: cliente.origem,
+      rg: cliente.rg,
+      dataNascimento: cliente.dataNascimento,
+      estadoCivil: cliente.estadoCivil,
+      profissao: cliente.profissao,
+      responsavel: cliente.responsavel,
+      imovelInteresseId: cliente.imovelInteresseId,
+      endereco: {
+        cep: cliente.enderecoCep,
+        logradouro: cliente.enderecoLogradouro,
+        numero: cliente.enderecoNumero,
+        complemento: cliente.enderecoComplemento,
+        bairro: cliente.enderecoBairro,
+        cidade: cliente.enderecoCidade,
+        uf: cliente.enderecoUf,
+        pais: cliente.enderecoPais,
+      },
+      contatos: cliente.contatos,
       status: cliente.status,
       dataCadastro: cliente.dataCadastro.toISOString(),
       dataAtualizacao: cliente.dataAtualizacao.toISOString(),

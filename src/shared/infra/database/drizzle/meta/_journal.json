@@ -99,6 +99,62 @@
       "when": 1795321303838,
       "tag": "0013_bright_lyja",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1795363287290,
+      "tag": "0014_integracao_front",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1795398592084,
+      "tag": "0015_lote_detalhes",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1795399595038,
+      "tag": "0016_registros_e_propostas",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1795401760575,
+      "tag": "0017_chaves_estrangeiras",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1795402616087,
+      "tag": "0018_trocar_senha",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1795404918645,
+      "tag": "0019_notificacoes",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1795407417229,
+      "tag": "0020_links_publicos",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1795408705742,
+      "tag": "0021_config_notificacao_e_relatorios",
+      "breakpoints": true
     }
   ]
 }

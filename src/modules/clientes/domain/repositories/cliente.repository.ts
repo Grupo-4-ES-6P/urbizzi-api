@@ -1,6 +1,7 @@
 import type {
   ClienteEntity,
   ClienteEntityProps,
+  ContatoComercial,
   StatusCliente,
   TipoDocumentoCliente,
 } from "../models/cliente.entity";
@@ -30,11 +31,11 @@ export interface BuscarClientesPaginadoResultado {
 
 export type NovoClienteInput = Omit<
   ClienteEntityProps,
-  "id" | "dataCadastro" | "dataAtualizacao"
+  "id" | "dataCadastro" | "dataAtualizacao" | "contatos"
 >;
 
 export type AtualizarClienteInput = Partial<
-  Omit<ClienteEntityProps, "id" | "dataCadastro">
+  Omit<ClienteEntityProps, "id" | "dataCadastro" | "contatos">
 >;
 
 export interface ClienteRepository {
@@ -48,4 +49,7 @@ export interface ClienteRepository {
     id: bigint,
     input: AtualizarClienteInput,
   ): Promise<ClienteEntity | null>;
+  delete(id: bigint): Promise<void>;
+  findContatos(idCliente: bigint): Promise<ContatoComercial[]>;
+  replaceContatos(idCliente: bigint, contatos: ContatoComercial[]): Promise<void>;
 }

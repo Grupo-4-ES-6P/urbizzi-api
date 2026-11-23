@@ -14,6 +14,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import bcrypt from "bcryptjs";
+import { Perfil } from "@modules/permissoes/domain/permissoes.catalogo";
 import { UsuarioBuilder } from "@modules/usuarios/domain/builder/usuario.builder";
 
 export interface UsuarioPayload {
@@ -30,7 +31,8 @@ export class UsuarioService {
     private readonly userRepository: UsuarioRepository,
   ) {}
 
-  async create(dto: CreateUsuarioDto): Promise<UsuarioResponseDto> {
+  /** Senha definida pelo admin é provisória: a pessoa troca no primeiro acesso. */
+  async create(dto: CreateUsuarioDto, { trocarSenha = true } = {}): Promise<UsuarioResponseDto> {
     const existing = await this.userRepository.findByEmail(
       dto.email.toLowerCase(),
     );
@@ -44,7 +46,9 @@ export class UsuarioService {
       .withEmail(dto.email)
       .withPassword(hashedPassword)
       .withStatus(dto.status)
-      .withPermissions(this.normalizePermissions(dto.permissions))
+      .withPerfil(dto.perfil)
+      .withTrocarSenha(trocarSenha)
+      .withPermissions(this.normalizePermissions(dto.permissions ?? []))
       .withAnexoId(dto.anexoId)
       .build()
 
@@ -105,6 +109,8 @@ export class UsuarioService {
       .withEmail(dto.email??current.email)
       .withPassword(password)
       .withStatus(dto.status??current.status)
+      .withPerfil(dto.perfil ?? current.perfil)
+      .withTrocarSenha(dto.password ? true : current.trocarSenha)
       .withPermissions(
         dto.permissions !== undefined 
         ? this.normalizePermissions(dto.permissions) 
@@ -120,6 +126,7 @@ export class UsuarioService {
       throw new NotFoundException("Usuário não encontrado.");
     }
 
+    await this.garantirAdministradorAtivo(current, updatedUser);
     await this.userRepository.update(updatedUser);
 
     const refreshed = await this.userRepository.findById(parsedId);
@@ -139,6 +146,7 @@ export class UsuarioService {
       throw new NotFoundException("Usuário não encontrado.");
     }
 
+    await this.garantirAdministradorAtivo(current, null);
     await this.userRepository.delete(parsedId);
   }
 
@@ -151,8 +159,27 @@ export class UsuarioService {
       email: user.email,
       status: user.status,
       permissions: user.permissions,
-      anexoId: user.anexoId.toString(),
+      perfil: user.perfil,
+      ultimoAcesso: user.ultimoAcesso?.toISOString() ?? null,
+      anexoId: user.anexoId?.toString() ?? null,
     };
+  }
+
+  private async garantirAdministradorAtivo(
+    atual: Usuario,
+    proximo: Usuario | null,
+  ): Promise<void> {
+    const ehAdminAtivo = (u: Usuario | null) =>
+      u?.perfil === Perfil.ADMINISTRADOR && u.status === StatusUsuario.ATIVO;
+
+    if (!ehAdminAtivo(atual) || ehAdminAtivo(proximo)) return;
+
+    const usuarios = await this.userRepository.findAll();
+    if (!usuarios.some((u) => u.id !== atual.id && ehAdminAtivo(u))) {
+      throw new BadRequestException(
+        "O sistema precisa de pelo menos um administrador ativo.",
+      );
+    }
   }
 
   // chamado pelo AuthService durante o login

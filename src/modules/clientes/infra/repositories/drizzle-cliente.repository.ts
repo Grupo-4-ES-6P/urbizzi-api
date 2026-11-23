@@ -1,9 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { DrizzleService } from "@shared/infra/database/drizzle/drizzle.service";
-import { and, count, eq, ilike, or, type SQL } from "drizzle-orm";
+import { and, asc, count, eq, ilike, or, type SQL } from "drizzle-orm";
 import {
   ClienteEntity,
   type ClienteEntityProps,
+  type ContatoComercial,
 } from "../../domain/models/cliente.entity";
 import type {
   AtualizarClienteInput,
@@ -12,6 +13,7 @@ import type {
   ClienteRepository,
   NovoClienteInput,
 } from "../../domain/repositories/cliente.repository";
+import { clienteContatoSchema } from "../schemas/cliente-contato.schema";
 import { clienteSchema } from "../schemas/cliente.schema";
 
 @Injectable()
@@ -83,6 +85,53 @@ export class DrizzleClienteRepository implements ClienteRepository {
       .returning();
 
     return row ? this.findById(id) : null;
+  }
+
+  async delete(id: bigint): Promise<void> {
+    await this.drizzleService.db
+      .delete(clienteSchema)
+      .where(eq(clienteSchema.id, id));
+  }
+
+  async findContatos(idCliente: bigint): Promise<ContatoComercial[]> {
+    const rows = await this.drizzleService.db
+      .select()
+      .from(clienteContatoSchema)
+      .where(eq(clienteContatoSchema.idCliente, idCliente))
+      .orderBy(asc(clienteContatoSchema.data), asc(clienteContatoSchema.id));
+
+    return rows.map((row) => ({
+      id: row.id.toString(),
+      data: row.data,
+      canal: row.canal,
+      responsavel: row.responsavel,
+      imovelId: row.imovelId,
+      assunto: row.assunto,
+      resultado: row.resultado,
+    }));
+  }
+
+  async replaceContatos(
+    idCliente: bigint,
+    contatos: ContatoComercial[],
+  ): Promise<void> {
+    await this.drizzleService.db.transaction(async (tx) => {
+      await tx
+        .delete(clienteContatoSchema)
+        .where(eq(clienteContatoSchema.idCliente, idCliente));
+      if (contatos.length === 0) return;
+      await tx.insert(clienteContatoSchema).values(
+        contatos.map((contato) => ({
+          idCliente,
+          data: contato.data,
+          canal: contato.canal,
+          responsavel: contato.responsavel,
+          imovelId: contato.imovelId,
+          assunto: contato.assunto,
+          resultado: contato.resultado,
+        })),
+      );
+    });
   }
 
   private buildWhere(input: BuscarClientesPaginadoInput): SQL | undefined {

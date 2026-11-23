@@ -9,8 +9,9 @@ import {
   ValidateIf,
 } from "class-validator";
 import { TipoDocumentoCliente } from "../../domain/models/cliente.entity";
+import { ClienteComplementoDto } from "./cliente-complemento.dto";
 
-export class CreateClienteDto {
+export class CreateClienteDto extends ClienteComplementoDto {
   @IsEnum(TipoDocumentoCliente)
   tipoDocumento!: TipoDocumentoCliente;
 
@@ -40,10 +41,11 @@ export class CreateClienteDto {
   @MaxLength(256)
   nomeFantasia?: string;
 
+  @IsOptional()
+  @Transform(({ value }) => (value === "" ? undefined : value))
   @IsString()
-  @IsNotEmpty()
   @MaxLength(20)
-  telefone!: string;
+  telefone?: string;
 
   @IsOptional()
   @Transform(({ value }) => (value === "" ? undefined : value))

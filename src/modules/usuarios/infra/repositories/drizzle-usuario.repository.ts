@@ -11,13 +11,14 @@ export class DrizzleUsuarioRepository implements UsuarioRepository {
   constructor(private readonly drizzleService: DrizzleService) {}
 
   async create(user: Usuario): Promise<void> {
-    console.log(user);
     await this.drizzleService.db.insert(usuariosSchema).values({
       name: user.name.toString(),
-      email: user.email,
+      email: user.email.toLowerCase(),
       password: user.password,
       permissions: user.permissions,
       status: user.status,
+      perfil: user.perfil,
+      trocarSenha: user.trocarSenha ?? false,
       anexoId: user.anexoId,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -29,10 +30,12 @@ export class DrizzleUsuarioRepository implements UsuarioRepository {
       .update(usuariosSchema)
       .set({
         name: user.name.toString(),
-        email: user.email,
+        email: user.email.toLowerCase(),
         password: user.password,
         permissions: user.permissions,
         status: user.status,
+        perfil: user.perfil,
+        trocarSenha: user.trocarSenha ?? false,
         anexoId: user.anexoId,
         updatedAt: new Date(),
       })

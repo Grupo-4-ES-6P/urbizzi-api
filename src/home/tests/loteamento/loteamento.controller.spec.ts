@@ -1,5 +1,8 @@
 import { LoteamentoService } from "@modules/loteamento/application/services/loteamento.service";
-import { LoteamentoEntity } from "@modules/loteamento/domain/models/loteamento.entity";
+import {
+  CAMPOS_DETALHES,
+  LoteamentoEntity,
+} from "@modules/loteamento/domain/models/loteamento.entity";
 import { LoteamentoController } from "@modules/loteamento/infra/controllers/loteamento.controller";
 
 const loteamento = new LoteamentoEntity({
@@ -12,7 +15,7 @@ const loteamento = new LoteamentoEntity({
 });
 
 describe("LoteamentoController", () => {
-  it("delega o CRUD e retorna somente os campos do DER", async () => {
+  it("delega o CRUD e retorna os campos do DER e de cadastro", async () => {
     const service = {
       save: jest.fn().mockResolvedValue(loteamento),
       findById: jest.fn().mockResolvedValue(loteamento),
@@ -28,7 +31,8 @@ describe("LoteamentoController", () => {
       publicado: true,
       idBairro: 2,
     };
-    const expected = { idLoteamento: 1, ...input };
+    const detalhesVazios = Object.fromEntries(CAMPOS_DETALHES.map((campo) => [campo, null]));
+    const expected = { idLoteamento: 1, ...input, ...detalhesVazios };
     await expect(controller.save(input)).resolves.toEqual(expected);
     await expect(controller.findById("1")).resolves.toEqual(expected);
     await expect(controller.findMany()).resolves.toEqual([expected]);

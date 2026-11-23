@@ -4,7 +4,12 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import type { LoteamentoEntity } from "../../domain/models/loteamento.entity";
+import {
+  CAMPOS_DETALHES,
+  type LoteamentoDetalhes,
+  type LoteamentoEntity,
+} from "../../domain/models/loteamento.entity";
+import type { LoteamentoDetalhesDto } from "../dto/loteamento-detalhes.dto";
 import {
   LOTEAMENTO_REPOSITORY,
   type LoteamentoRepository,
@@ -22,10 +27,11 @@ export class LoteamentoService {
   async save(data: CreateLoteamentoDto): Promise<LoteamentoEntity> {
     return this.repository.save({
       nome: this.requiredText(data.nome, "Nome"),
-      descricao: this.requiredText(data.descricao, "Descrição"),
+      descricao: data.descricao?.trim() ?? "",
       situacao: this.requiredText(data.situacao, "Situação"),
-      publicado: data.publicado,
-      idBairro: this.bairroId(data.idBairro),
+      publicado: data.publicado ?? false,
+      idBairro: data.idBairro == null ? null : this.bairroId(data.idBairro),
+      ...this.detalhes(data),
     });
   }
 
@@ -52,17 +58,19 @@ export class LoteamentoService {
         data.nome === undefined
           ? undefined
           : this.requiredText(data.nome, "Nome"),
-      descricao:
-        data.descricao === undefined
-          ? undefined
-          : this.requiredText(data.descricao, "Descrição"),
+      descricao: data.descricao === undefined ? undefined : data.descricao.trim(),
       situacao:
         data.situacao === undefined
           ? undefined
           : this.requiredText(data.situacao, "Situação"),
       publicado: data.publicado,
       idBairro:
-        data.idBairro === undefined ? undefined : this.bairroId(data.idBairro),
+        data.idBairro === undefined
+          ? undefined
+          : data.idBairro === null
+            ? null
+            : this.bairroId(data.idBairro),
+      ...this.detalhes(data),
     });
     if (!atualizado) throw new NotFoundException("Loteamento não encontrado.");
     return atualizado;
@@ -71,6 +79,19 @@ export class LoteamentoService {
   async removeById(id: string): Promise<void> {
     const removed = await this.repository.remove(this.parseId(id));
     if (!removed) throw new NotFoundException("Loteamento não encontrado.");
+  }
+
+  /** Só inclui o que veio no corpo: ausente mantém, null apaga. */
+  private detalhes(data: LoteamentoDetalhesDto): Partial<LoteamentoDetalhes> {
+    const saida: Partial<Record<keyof LoteamentoDetalhes, unknown>> = {};
+    for (const campo of CAMPOS_DETALHES) {
+      const valor = data[campo];
+      if (valor === undefined) continue;
+      saida[campo] = typeof valor === "string" ? valor.trim() || null : valor;
+    }
+    if (typeof saida.cep === "string") saida.cep = saida.cep.replace(/\D/g, "") || null;
+    if (typeof saida.uf === "string") saida.uf = saida.uf.toUpperCase();
+    return saida as Partial<LoteamentoDetalhes>;
   }
 
   private parseId(id: string): number {

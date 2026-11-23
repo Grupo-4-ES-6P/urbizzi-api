@@ -35,6 +35,8 @@ export class PropostaService {
       idLote: this.parseId(data.idLote),
       idUsuario: this.parseId(usuarioId),
       idCliente: this.parseId(data.idCliente),
+      codigo: this.optionalText(data.codigo),
+      detalhes: data.detalhes ?? {},
     });
   }
 
@@ -71,6 +73,9 @@ export class PropostaService {
     if (data.idLote !== undefined) input.idLote = this.parseId(data.idLote);
     if (data.idCliente !== undefined)
       input.idCliente = this.parseId(data.idCliente);
+
+    if (data.codigo !== undefined) input.codigo = this.optionalText(data.codigo);
+    if (data.detalhes !== undefined) input.detalhes = data.detalhes;
 
     if (Object.keys(input).length === 0) return existente;
 

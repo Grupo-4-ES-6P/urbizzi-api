@@ -7,9 +7,15 @@ import {
 } from "@nestjs/common";
 import {
   ClienteEntity,
+  type ClienteEntityProps,
+  type ContatoComercial,
   StatusCliente,
   TipoDocumentoCliente,
 } from "../../domain/models/cliente.entity";
+import type {
+  ClienteComplementoDto,
+  ContatoComercialDto,
+} from "../dto/cliente-complemento.dto";
 import {
   type BuscarClientesFiltros,
   CLIENTE_REPOSITORY,
@@ -57,19 +63,37 @@ export class ClienteService {
       nome: this.optionalTrim(dto.nome),
       razaoSocial: this.optionalTrim(dto.razaoSocial),
       nomeFantasia: this.optionalTrim(dto.nomeFantasia),
-      telefone: this.normalizeTelefone(dto.telefone),
+      telefone: this.optionalTelefone(dto.telefone),
       email: this.normalizeEmail(dto.email),
       origem: this.optionalTrim(dto.origem),
+      ...this.complemento(dto),
       status: StatusCliente.ATIVO,
     };
+    this.validateMeioDeContato(input);
 
-    return { cliente: await this.clienteRepository.save(input) };
+    const cliente = await this.clienteRepository.save(input);
+    if (dto.contatos?.length && cliente.id) {
+      await this.clienteRepository.replaceContatos(
+        cliente.id,
+        this.contatos(dto.contatos),
+      );
+    }
+
+    return { cliente: await this.comContatos(cliente) };
+  }
+
+  async delete(id: string): Promise<void> {
+    const parsedId = this.parseId(id);
+    if (!(await this.clienteRepository.findById(parsedId))) {
+      throw new NotFoundException("Cliente não encontrado.");
+    }
+    await this.clienteRepository.delete(parsedId);
   }
 
   async findById(id: string): Promise<ClienteEntity> {
     const cliente = await this.clienteRepository.findById(this.parseId(id));
     if (!cliente) throw new NotFoundException("Cliente não encontrado.");
-    return cliente;
+    return this.comContatos(cliente);
   }
 
   async findMany(query: FindClientesQueryDto): Promise<ClientesPaginados> {
@@ -94,7 +118,7 @@ export class ClienteService {
     });
 
     return {
-      data: result.data,
+      data: await Promise.all(result.data.map((c) => this.comContatos(c))),
       paginacao: {
         page: query.page,
         perPage: query.perPage,
@@ -133,7 +157,7 @@ export class ClienteService {
       }
     }
 
-    const updated = await this.clienteRepository.update(parsedId, {
+    const input = {
       tipoDocumento,
       documentoIdentificacao: documento,
       nome,
@@ -142,9 +166,10 @@ export class ClienteService {
         dto.nomeFantasia !== undefined
           ? this.optionalTrim(dto.nomeFantasia)
           : current.nomeFantasia,
-      telefone: dto.telefone
-        ? this.normalizeTelefone(dto.telefone)
-        : current.telefone,
+      telefone:
+        dto.telefone !== undefined
+          ? this.optionalTelefone(dto.telefone)
+          : current.telefone,
       email:
         dto.email !== undefined
           ? this.normalizeEmail(dto.email)
@@ -153,10 +178,94 @@ export class ClienteService {
         dto.origem !== undefined
           ? this.optionalTrim(dto.origem)
           : current.origem,
-    });
+      ...this.complemento(dto, current),
+    };
+    this.validateMeioDeContato(input);
 
+    const updated = await this.clienteRepository.update(parsedId, input);
     if (!updated) throw new NotFoundException("Cliente não encontrado.");
-    return updated;
+
+    if (dto.contatos !== undefined) {
+      await this.clienteRepository.replaceContatos(
+        parsedId,
+        this.contatos(dto.contatos),
+      );
+    }
+    return this.comContatos(updated);
+  }
+
+  private complemento(
+    dto: ClienteComplementoDto,
+    atual?: ClienteEntity,
+  ): Partial<ClienteEntityProps> {
+    const manter = <T>(valor: T | undefined, anterior: T | null | undefined) =>
+      valor === undefined ? (anterior ?? null) : (valor ?? null);
+    const texto = (valor: string | null | undefined) =>
+      valor === undefined ? undefined : valor?.trim() || null;
+    const e = dto.endereco;
+
+    return {
+      celular:
+        dto.celular !== undefined
+          ? this.optionalTelefone(dto.celular)
+          : (atual?.celular ?? null),
+      rg: manter(texto(dto.rg), atual?.rg),
+      dataNascimento: manter(dto.dataNascimento, atual?.dataNascimento),
+      estadoCivil: manter(texto(dto.estadoCivil), atual?.estadoCivil),
+      profissao: manter(texto(dto.profissao), atual?.profissao),
+      responsavel: manter(texto(dto.responsavel), atual?.responsavel),
+      imovelInteresseId: manter(
+        texto(dto.imovelInteresseId),
+        atual?.imovelInteresseId,
+      ),
+      ...(e
+        ? {
+            enderecoCep: e.cep ? this.normalizeDigits(e.cep) || null : null,
+            enderecoLogradouro: e.logradouro?.trim() || null,
+            enderecoNumero: e.numero?.trim() || null,
+            enderecoComplemento: e.complemento?.trim() || null,
+            enderecoBairro: e.bairro?.trim() || null,
+            enderecoCidade: e.cidade?.trim() || null,
+            enderecoUf: e.uf?.trim().toUpperCase() || null,
+            enderecoPais: e.pais?.trim() || null,
+          }
+        : {}),
+    };
+  }
+
+  private contatos(contatos: ContatoComercialDto[]): ContatoComercial[] {
+    return contatos.map((c) => ({
+      data: c.data.slice(0, 10),
+      canal: c.canal.trim(),
+      responsavel: c.responsavel.trim(),
+      imovelId: c.imovelId?.trim() || null,
+      assunto: c.assunto.trim(),
+      resultado: c.resultado,
+    }));
+  }
+
+  private async comContatos(cliente: ClienteEntity): Promise<ClienteEntity> {
+    if (!cliente.id) return cliente;
+    return new ClienteEntity({
+      ...cliente,
+      contatos: await this.clienteRepository.findContatos(cliente.id),
+    });
+  }
+
+  private validateMeioDeContato(input: {
+    telefone?: string | null;
+    celular?: string | null;
+    email?: string | null;
+  }): void {
+    if (!input.telefone && !input.celular && !input.email) {
+      throw new BadRequestException(
+        "Informe pelo menos um telefone, celular ou e-mail.",
+      );
+    }
+  }
+
+  private optionalTelefone(value?: string | null): string | null {
+    return value?.trim() ? this.normalizeTelefone(value) : null;
   }
 
   async deactivate(id: string): Promise<ClienteEntity> {
@@ -174,7 +283,7 @@ export class ClienteService {
     }
     const updated = await this.clienteRepository.update(parsedId, { status });
     if (!updated) throw new NotFoundException("Cliente não encontrado.");
-    return updated;
+    return this.comContatos(updated);
   }
 
   private validateIdentity(

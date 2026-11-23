@@ -1,3 +1,4 @@
+import { Perfil } from "@modules/permissoes/domain/permissoes.catalogo";
 import { StatusUsuario } from "@modules/usuarios/domain/models/usuario.entity";
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
@@ -37,6 +38,11 @@ export class UpdateUsuarioDto {
   @IsEnum(StatusUsuario)
   @MaxLength(256)
   status?: StatusUsuario | string;
+
+  @ApiProperty({ enum: Perfil, required: false })
+  @IsOptional()
+  @IsEnum(Perfil)
+  perfil?: Perfil;
 
   @ApiProperty()
   @IsOptional()

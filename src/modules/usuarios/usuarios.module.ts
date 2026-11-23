@@ -5,9 +5,11 @@ import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { JwtAuthGuard } from "@shared/guards/jwt-auth.guard";
+import { PermissoesGuard } from "@shared/guards/permissoes.guard";
 import { SharedModule } from "@shared/shared.module";
 import type { StringValue } from "ms";
 import { UsuarioController } from "./infra/controllers/usuario.controller";
+import { UsuarioSeedService } from "./application/services/usuario-seed.service";
 
 @Module({
   imports: [
@@ -32,7 +34,9 @@ import { UsuarioController } from "./infra/controllers/usuario.controller";
   controllers: [UsuarioController],
   providers: [
     UsuarioService,
+    UsuarioSeedService,
     JwtAuthGuard,
+    PermissoesGuard,
     DrizzleUsuarioRepository,
     {
       provide: USUARIO_REPOSITORY,

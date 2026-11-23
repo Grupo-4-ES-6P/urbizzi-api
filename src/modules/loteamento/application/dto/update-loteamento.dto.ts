@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import {
   IsBoolean,
   IsInt,
@@ -7,8 +8,9 @@ import {
   Max,
   Min,
 } from "class-validator";
+import { LoteamentoDetalhesDto } from "./loteamento-detalhes.dto";
 
-export class UpdateLoteamentoDto {
+export class UpdateLoteamentoDto extends LoteamentoDetalhesDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
@@ -16,7 +18,6 @@ export class UpdateLoteamentoDto {
 
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   descricao?: string;
 
   @IsOptional()
@@ -32,5 +33,5 @@ export class UpdateLoteamentoDto {
   @IsInt()
   @Min(1)
   @Max(2147483647)
-  idBairro?: number;
+  idBairro?: number | null;
 }

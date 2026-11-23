@@ -15,6 +15,9 @@ const makeRepository = (): Mocked<ClienteRepository> => ({
   findByDocumento: jest.fn(),
   findManyPaginated: jest.fn(),
   update: jest.fn(),
+  delete: jest.fn(),
+  findContatos: jest.fn().mockResolvedValue([]),
+  replaceContatos: jest.fn(),
 });
 
 const makeCliente = (overrides: Partial<ClienteEntity> = {}) =>

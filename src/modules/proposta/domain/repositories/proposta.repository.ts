@@ -16,7 +16,8 @@ export type NovaPropostaInput = Pick<
   | "idLote"
   | "idUsuario"
   | "idCliente"
->;
+> &
+  Partial<Pick<PropostaEntityProps, "codigo" | "detalhes">>;
 
 export type AtualizarPropostaInput = Partial<
   Pick<
@@ -29,6 +30,8 @@ export type AtualizarPropostaInput = Partial<
     | "prazoResposta"
     | "idLote"
     | "idCliente"
+    | "codigo"
+    | "detalhes"
   >
 >;
 

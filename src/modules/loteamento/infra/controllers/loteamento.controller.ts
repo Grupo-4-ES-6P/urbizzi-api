@@ -9,26 +9,34 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
+import { Permissoes } from "@shared/decorators/permissoes.decorator";
 import { JwtAuthGuard } from "@shared/guards/jwt-auth.guard";
+import { PermissoesGuard } from "@shared/guards/permissoes.guard";
 import { CreateLoteamentoDto } from "../../application/dto/create-loteamento.dto";
 import { UpdateLoteamentoDto } from "../../application/dto/update-loteamento.dto";
 import { LoteamentoService } from "../../application/services/loteamento.service";
-import type { LoteamentoEntity } from "../../domain/models/loteamento.entity";
+import type {
+  LoteamentoDetalhes,
+  LoteamentoEntity,
+} from "../../domain/models/loteamento.entity";
 
-interface LoteamentoResponse {
+interface LoteamentoResponse extends LoteamentoDetalhes {
   idLoteamento: number | null;
   nome: string;
   descricao: string;
   situacao: string;
   publicado: boolean;
-  idBairro: number;
+  idBairro: number | null;
 }
 
-@UseGuards(JwtAuthGuard)
+const ESCRITA = "CADASTRAR_IMOVEIS";
+
+@UseGuards(JwtAuthGuard, PermissoesGuard)
 @Controller("loteamentos")
 export class LoteamentoController {
   constructor(private readonly service: LoteamentoService) {}
 
+  @Permissoes(ESCRITA)
   @Post()
   async save(@Body() body: CreateLoteamentoDto): Promise<LoteamentoResponse> {
     return this.toResponse(await this.service.save(body));
@@ -45,6 +53,7 @@ export class LoteamentoController {
     return this.toResponse(await this.service.findById(id));
   }
 
+  @Permissoes(ESCRITA)
   @Patch(":id")
   async update(
     @Param("id") id: string,
@@ -53,6 +62,7 @@ export class LoteamentoController {
     return this.toResponse(await this.service.updateById(id, body));
   }
 
+  @Permissoes(ESCRITA)
   @HttpCode(204)
   @Delete(":id")
   async remove(@Param("id") id: string): Promise<void> {
@@ -67,6 +77,7 @@ export class LoteamentoController {
       situacao: item.situacao,
       publicado: item.publicado,
       idBairro: item.idBairro,
+      ...item.detalhes,
     };
   }
 }

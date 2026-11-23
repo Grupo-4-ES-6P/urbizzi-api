@@ -1,3 +1,5 @@
+import { Perfil } from "@modules/permissoes/domain/permissoes.catalogo";
+
 export enum StatusUsuario {
   PENDENTE_ATIVACAO = "PENDENTE_ATIVACAO",
   ATIVO = "ATIVO",
@@ -12,6 +14,9 @@ export interface UsuarioProps {
   permissions: string[];
   status?: StatusUsuario | `${StatusUsuario}`;
   anexoId?: bigint | null;
+  perfil?: Perfil | `${Perfil}`;
+  ultimoAcesso?: Date | null;
+  trocarSenha?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -24,6 +29,9 @@ export class Usuario {
   private _permissions?: string[];
   private _status?: StatusUsuario;
   private _anexoId?: bigint;
+  private _perfil?: Perfil;
+  private _ultimoAcesso?: Date | null;
+  private _trocarSenha?: boolean;
   private readonly _createdAt?: Date;
   private _updatedAt?: Date;
 
@@ -53,6 +61,15 @@ export class Usuario {
   get anexoId() {
     return this._anexoId ?? BigInt(0);
   }
+  get perfil() {
+    return this._perfil ?? Perfil.CORRETOR;
+  }
+  get ultimoAcesso() {
+    return this._ultimoAcesso ?? null;
+  }
+  get trocarSenha() {
+    return this._trocarSenha ?? false;
+  }
   get dateCreated() {
     return this._createdAt;
   }
@@ -62,13 +79,13 @@ export class Usuario {
 
   //setters
   set id(id: bigint) {
-    if (this._id != undefined) {
+    if (this._id !== undefined) {
       throw "id alredy defined lmao";
     } 
     this._id = id;
   }
-  set name(name: String) {
-    this.name = name;
+  set name(name: string) {
+    this._name = name;
   }
   set email(email: string) {
     this._email = email;
@@ -84,6 +101,15 @@ export class Usuario {
   }
   set anexoId(anexoId: bigint) {
     this._anexoId = anexoId;
+  }
+  set perfil(perfil: Perfil) {
+    this._perfil = perfil;
+  }
+  set ultimoAcesso(ultimoAcesso: Date | null) {
+    this._ultimoAcesso = ultimoAcesso;
+  }
+  set trocarSenha(trocarSenha: boolean) {
+    this._trocarSenha = trocarSenha;
   }
   set dateUpdated(dateUpdated: Date) {
     this._updatedAt = dateUpdated;

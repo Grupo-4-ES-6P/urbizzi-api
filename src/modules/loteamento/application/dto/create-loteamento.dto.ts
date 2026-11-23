@@ -1,30 +1,35 @@
+import "reflect-metadata";
 import {
   IsBoolean,
   IsInt,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Max,
   Min,
 } from "class-validator";
+import { LoteamentoDetalhesDto } from "./loteamento-detalhes.dto";
 
-export class CreateLoteamentoDto {
+export class CreateLoteamentoDto extends LoteamentoDetalhesDto {
   @IsString()
   @IsNotEmpty()
   nome!: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  descricao!: string;
+  descricao?: string;
 
   @IsString()
   @IsNotEmpty()
   situacao!: string;
 
+  @IsOptional()
   @IsBoolean()
-  publicado!: boolean;
+  publicado?: boolean;
 
+  @IsOptional()
   @IsInt()
   @Min(1)
   @Max(2147483647)
-  idBairro!: number;
+  idBairro?: number | null;
 }
