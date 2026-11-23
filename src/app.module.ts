@@ -18,6 +18,7 @@ import { UsuariosModule } from "./modules/usuarios/usuarios.module";
 import { QuadraModule } from "@modules/quadra/quadra.module";
 import { LoteModule } from "@modules/lote/lote.module";
 import { NotificacoesModule } from "@modules/notificacoes/notificacoes.module";
+import { LinksPublicosModule } from "@modules/links-publicos/links-publicos.module";
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { NotificacoesModule } from "@modules/notificacoes/notificacoes.module";
     PropostaModule,
     RegistrosModule,
     NotificacoesModule,
+    LinksPublicosModule,
     UsuariosModule,
     LogradouroModule,
     BairroModule,
